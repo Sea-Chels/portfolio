@@ -1,33 +1,34 @@
 import { useState } from 'react'
 import './Css/App.css'
+import { ThemeProvider, useTheme } from './context/ThemeContext'
 import NavBar from './Components/NavBar'
 import LandingPage from './Components/LandingPage'
 import AboutPage from './Components/AboutPage'
 import ArtPage from './Components/ArtPage'
 
-type ThemeMode = 'light' | 'dark'
+type Page = 'dev' | 'about' | 'art'
 
-function App() {
-  const [isDevPage, setIsDevPage] = useState(true)
-  const [isAboutPage, setIsAboutPage] = useState(false)
-  const [isArtPage, setIsArtPage] = useState(false)
-  const [themeMod, setThemeMod] = useState<ThemeMode>('light')
-  const appClasses = ['App', themeMod]
+function AppContent() {
+  const [currentPage, setCurrentPage] = useState<Page>('dev')
+  const { theme } = useTheme()
 
   return (
-    <div className={appClasses.join(' ')}>
-      <NavBar
-        setIsDevPage={setIsDevPage}
-        setIsAboutPage={setIsAboutPage}
-        setIsArtPage={setIsArtPage}
-        setThemeMod={setThemeMod}
-        themeMod={themeMod}
-        isDevPage={isDevPage}
-      />
-      {isDevPage ? <LandingPage themeMod={themeMod} /> : null}
-      {isAboutPage ? <AboutPage theme={themeMod} /> : null}
-      {isArtPage ? <ArtPage /> : null}
+    <div className={`min-h-screen ${theme}`}>
+      <NavBar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <main className="px-6 md:px-10 lg:px-12">
+        {currentPage === 'dev' && <LandingPage themeMod={theme} />}
+        {currentPage === 'about' && <AboutPage />}
+        {currentPage === 'art' && <ArtPage />}
+      </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   )
 }
 

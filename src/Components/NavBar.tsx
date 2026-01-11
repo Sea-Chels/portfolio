@@ -1,76 +1,106 @@
-import '../Css/App.css'
-import { Switch, Tooltip } from 'antd'
+import { useTheme } from '../context/ThemeContext'
 import ScrollIntoView from 'react-scroll-into-view'
 
-type ThemeMode = 'light' | 'dark'
+type Page = 'dev' | 'about' | 'art'
 
 interface NavBarProps {
-  setIsDevPage: (value: boolean) => void
-  setIsAboutPage: (value: boolean) => void
-  setIsArtPage: (value: boolean) => void
-  setThemeMod: (value: ThemeMode) => void
-  themeMod: ThemeMode
-  isDevPage: boolean
+  currentPage: Page
+  setCurrentPage: (page: Page) => void
 }
 
-function NavBar({
-  setIsDevPage,
-  setIsAboutPage,
-  setIsArtPage,
-  setThemeMod,
-  themeMod,
-  isDevPage,
-}: NavBarProps) {
-  const onNavClick = (button: string) => {
-    if (button === 'dev') {
-      setIsDevPage(true)
-      setIsAboutPage(false)
-      setIsArtPage(false)
-    } else if (button === 'about') {
-      setIsDevPage(false)
-      setIsAboutPage(true)
-      setIsArtPage(false)
-    } else {
-      setIsDevPage(false)
-      setIsAboutPage(false)
-      setIsArtPage(true)
-    }
-  }
+function NavBar({ currentPage, setCurrentPage }: NavBarProps) {
+  const { theme, toggleTheme } = useTheme()
 
-  const switchColor = themeMod === 'dark' ? 'light' : 'dark'
+  const navItems: { id: Page; label: string }[] = [
+    { id: 'dev', label: 'WORK' },
+    { id: 'about', label: 'ABOUT' },
+    { id: 'art', label: 'ART' },
+  ]
 
   return (
-    <div className="NavBar">
-      <div className="home-identifier">Chelby Sallady</div>
-      <div className="nav-buttons">
-        {isDevPage ? (
-          <ScrollIntoView className="nav-scroll-container" selector="#web-projects">
-            <button className="nav">WORK</button>
-          </ScrollIntoView>
-        ) : (
-          <button className="nav" onClick={() => onNavClick('dev')}>
-            WORK
+    <nav className="sticky top-0 z-50 backdrop-blur-md bg-[var(--bg)]/80 border-b border-[var(--border)]">
+      <div className="mx-auto px-6 md:px-10 lg:px-12 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo / Name */}
+          <button
+            onClick={() => setCurrentPage('dev')}
+            className="font-display text-2xl text-accent hover:text-accent-hover transition-colors"
+          >
+            Chelby Sallady
           </button>
-        )}
-        <button className="nav" onClick={() => onNavClick('about')}>
-          ABOUT ME
-        </button>
-        <button className="nav" onClick={() => onNavClick('art')}>
-          ILLUSTRATION
-        </button>
+
+          {/* Navigation Links */}
+          <div className="flex items-center gap-1">
+            {navItems.map((item) => {
+              const isActive = currentPage === item.id
+              const baseClasses =
+                'px-4 py-2 font-mono text-sm tracking-wider transition-all duration-200'
+              const activeClasses = isActive
+                ? 'text-accent border-b-2 border-accent'
+                : 'text-[var(--text-secondary)] hover:text-accent'
+
+              // Special handling for WORK button when on dev page
+              if (item.id === 'dev' && currentPage === 'dev') {
+                return (
+                  <ScrollIntoView key={item.id} selector="#web-projects">
+                    <button className={`${baseClasses} ${activeClasses}`}>
+                      {item.label}
+                    </button>
+                  </ScrollIntoView>
+                )
+              }
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setCurrentPage(item.id)}
+                  className={`${baseClasses} ${activeClasses}`}
+                >
+                  {item.label}
+                </button>
+              )
+            })}
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="ml-4 p-2 rounded-lg border border-[var(--border)] hover:border-accent hover:text-accent transition-all duration-200"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {theme === 'dark' ? (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
-      <Tooltip title="Change theme" color="rgb(28, 28, 30);">
-        <Switch
-          size="small"
-          className={` ${switchColor} theme`}
-          defaultChecked
-          onChange={() => {
-            if (themeMod === 'dark') setThemeMod('light')
-            if (themeMod === 'light') setThemeMod('dark')
-          }}
-        />
-      </Tooltip>
-    </div>
+    </nav>
   )
 }
 

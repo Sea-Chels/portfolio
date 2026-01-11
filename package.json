@@ -1,31 +1,40 @@
 {
-  "name": "portfolio",
-  "version": "0.1.0",
-  "homepage": "https://chelby-sallady.com/",
-  "private": true,
-  "type": "module",
-  "dependencies": {
-    "@ant-design/icons": "^5.2.6",
-    "antd": "^5.10.0",
-    "prop-types": "^15.8.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-responsive-masonry": "^2.1.7",
-    "react-scroll-into-view": "^2.0.2"
-  },
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.3.4",
-    "gh-pages": "^6.0.0",
-    "typescript": "~5.7.2",
-    "vite": "^6.0.7"
-  }
+	"name": "portfolio",
+	"version": "0.1.0",
+	"homepage": "https://chelby-sallady.com/",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@ant-design/icons": "^5.2.6",
+		"antd": "^5.10.0",
+		"gsap": "^3.14.2",
+		"matter-js": "^0.20.0",
+		"ogl": "^1.0.11",
+		"prop-types": "^15.8.1",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-responsive-masonry": "^2.1.7",
+		"react-scroll-into-view": "^2.0.2"
+	},
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc -b && vite build",
+		"preview": "vite preview",
+		"predeploy": "npm run build",
+		"deploy": "gh-pages -d dist"
+	},
+	"devDependencies": {
+		"@tailwindcss/postcss": "^4.1.18",
+		"@types/matter-js": "^0.20.2",
+		"@types/react": "^18.3.18",
+		"@types/react-dom": "^18.3.5",
+		"@vitejs/plugin-react": "^4.3.4",
+		"autoprefixer": "^10.4.23",
+		"gh-pages": "^6.0.0",
+		"jsrepo": "^3.0.10",
+		"postcss": "^8.5.6",
+		"tailwindcss": "^4.1.18",
+		"typescript": "~5.7.2",
+		"vite": "^6.0.7"
+	}
 }

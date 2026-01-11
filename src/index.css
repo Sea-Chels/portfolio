@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+/* Theme configuration for Tailwind v4 */
+@theme {
+  /* Colors - Minimal Hacker Dark Theme */
+  --color-hacker-bg: #0a0a0a;
+  --color-hacker-surface: #141414;
+  --color-hacker-elevated: #1e1e1e;
+  --color-hacker-border: #2a2a2a;
+  --color-hacker-muted: #3a3a3a;
+
+  /* Colors - Light Theme */
+  --color-light-bg: #f8f9fa;
+  --color-light-surface: #ffffff;
+  --color-light-elevated: #f0f0f0;
+  --color-light-border: #e0e0e0;
+  --color-light-muted: #6b7280;
+
+  /* Brand Colors */
+  --color-accent: #FF7A64;
+  --color-accent-hover: #ff8f7d;
+  --color-accent-muted: rgba(255, 122, 100, 0.2);
+
+  /* Text Colors */
+  --color-text-primary: #e4e4e7;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+
+  /* Fonts */
+  --font-sans: 'Inter', 'Helvetica', 'Arial', sans-serif;
+  --font-display: 'Satisfy', cursive;
+  --font-condensed: 'Saira Extra Condensed', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.5s ease-out;
+  --animate-slide-up: slideUp 0.5s ease-out;
+  --animate-glow: glow 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 122, 100, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 122, 100, 0.8); }
+}
+
+/* Base styles */
+:root {
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --elevated: #1e1e1e;
+  --border: #2a2a2a;
+  --text-primary: #f4f4f5;
+  --text-secondary: #d4d4d8;
+  --text-muted: #a1a1aa;
+}
+
+.light {
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --elevated: #f0f0f0;
+  --border: #e0e0e0;
+  --text-primary: #18181b;
+  --text-secondary: #3f3f46;
+  --text-muted: #71717a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', 'Helvetica', 'Arial', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: rgba(255, 122, 100, 0.3);
+  color: #FF7A64;
+}
+
+/* Component classes */
+.btn-hacker {
+  padding: 0.75rem 1.5rem;
+  background-color: transparent;
+  border: 1px solid #FF7A64;
+  color: #FF7A64;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease-out;
+  cursor: pointer;
+}
+
+.btn-hacker:hover {
+  background-color: #FF7A64;
+  color: #0a0a0a;
+  box-shadow: 0 0 20px rgba(255, 122, 100, 0.4);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #FF7A64, #fb923c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Grid background pattern */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(42, 42, 42, 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(42, 42, 42, 0.3) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.light .grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+}
+
+/* Card styling */
+.card-hacker {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  transition: all 0.3s ease-out;
+}
+
+.card-hacker:hover {
+  border-color: rgba(255, 122, 100, 0.5);
+  box-shadow: 0 0 30px rgba(255, 122, 100, 0.1);
+}
+
+/* Glow effect */
+.glow-accent {
+  box-shadow: 0 0 20px rgba(255, 122, 100, 0.3);
+}

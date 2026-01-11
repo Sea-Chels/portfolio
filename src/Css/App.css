@@ -1,7 +1,4 @@
-*{
-  margin: 0px;
-  padding: 0px;
-}
+/* Reset handled by Tailwind preflight */
 
 .App {
   text-align: center;
