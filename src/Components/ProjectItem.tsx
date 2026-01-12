@@ -1,4 +1,4 @@
-import { GithubOutlined, ArrowRightOutlined, EyeOutlined, PlayCircleOutlined } from '@ant-design/icons'
+import { GithubOutlined, ArrowRightOutlined, EyeOutlined, PlayCircleOutlined, AppleOutlined } from '@ant-design/icons'
 import { Modal, Button } from 'antd'
 import { useState, useRef, useEffect } from 'react'
 
@@ -10,6 +10,7 @@ interface ProjectItemProps {
   description: string
   link?: string
   website?: string
+  appStore?: string
 }
 
 function ProjectItem({
@@ -19,6 +20,7 @@ function ProjectItem({
   description,
   link,
   website,
+  appStore,
 }: ProjectItemProps) {
   const [modalVisible, setModalVisible] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
@@ -131,7 +133,13 @@ function ProjectItem({
             {website && (
               <span className="text-sm text-accent">
                 <ArrowRightOutlined className="mr-1" />
-                Live Demo
+                View Site
+              </span>
+            )}
+            {appStore && (
+              <span className="text-sm text-accent">
+                <AppleOutlined className="mr-1" />
+                App Store
               </span>
             )}
           </div>
@@ -177,7 +185,7 @@ function ProjectItem({
             </p>
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
               <Button
                 onClick={toggleModal}
                 size="large"
@@ -186,7 +194,7 @@ function ProjectItem({
                 Close
               </Button>
 
-              {link && !website && (
+              {link && !website && !appStore && (
                 <a
                   href={link}
                   target="_blank"
@@ -207,6 +215,18 @@ function ProjectItem({
                 >
                   <ArrowRightOutlined className="text-lg" />
                   Visit Site
+                </a>
+              )}
+
+              {appStore && (
+                <a
+                  href={appStore}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-hacker inline-flex items-center gap-2 !py-3"
+                >
+                  <AppleOutlined className="text-lg" />
+                  App Store
                 </a>
               )}
             </div>

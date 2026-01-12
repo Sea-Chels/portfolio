@@ -191,6 +191,7 @@ function LandingPage({ themeMod }: LandingPageProps) {
                   description={project?.description}
                   website={project?.website}
                   link={project?.link}
+                  appStore={project?.appStore}
                 />
               </div>
             ))}

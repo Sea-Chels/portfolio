@@ -6,6 +6,7 @@ import weatherDashboard from './vid_weatherDashboard.gif'
 import jsQuiz from './vid_jsQuiz.gif'
 import communityCookbook from './vid_communityCookbook.gif'
 import artistPortfolio from './artist-portfolio.gif'
+import healthy from './healthy.png'
 // artwork imports------------------------------------------
 import photo1 from './personalWork/photo-1.jpeg'
 import photo2 from './personalWork/photo-2.jpeg'
@@ -37,6 +38,7 @@ export interface Project {
   description: string
   website?: string
   link?: string
+  appStore?: string
 }
 
 export interface Artwork {
@@ -45,6 +47,15 @@ export interface Artwork {
 }
 
 export const projects: Project[] = [
+  {
+    title: 'Healthy',
+    path: healthy,
+    alt: 'Healthy - AI-driven health app',
+    description:
+      'An AI-driven health platform designed to help users maintain all their health records and stay healthy. The app leverages artificial intelligence to provide personalized health insights, track wellness metrics, and offer guidance for maintaining a healthy lifestyle. Available on iOS and web, Healthy serves as your personal health coach, making it easier to manage and understand your health data in one centralized location.',
+    website: 'https://app.getHealthy.com',
+    appStore: 'https://apps.apple.com/us/app/healthy-habit-health-coach/id6473211484',
+  },
   {
     title: 'Zipdrug / CarelonRx',
     path: 'https://imgs.search.brave.com/HpTwQ4RF9ZsfgqncMjjsGelbymXKjdOqwz6LkbNI_uk/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5saWNkbi5jb20v/ZG1zL2ltYWdlL0M1/NjFCQVFIRXExcDV3/Uy16MVEvY29tcGFu/eS1iYWNrZ3JvdW5k/XzEwMDAwLzAvMTU4/NTQ0MTEyMzk3Mi96/aXBkcnVnX2NvdmVy/P2U9MjE0NzQ4MzY0/NyZ2PWJldGEmdD12/VDRBQlp6R0U3QkVN/WTNVb1NKRlEwNkpX/bFRJMnZoUUw1a0F5/VVVWaGow',
