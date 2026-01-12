@@ -52,7 +52,7 @@ export const projects: Project[] = [
     path: healthy,
     alt: 'Healthy - AI-driven health app',
     description:
-      'An AI-driven health platform designed to help users maintain all their health records and stay healthy. The app leverages artificial intelligence to provide personalized health insights, track wellness metrics, and offer guidance for maintaining a healthy lifestyle. Available on iOS and web, Healthy serves as your personal health coach, making it easier to manage and understand your health data in one centralized location.',
+      'An AI-driven health platform designed to help users track their symptoms, body measurements, and food and stay healthy. Users can make a plan and stick to it, using notifications, chatting with their personalized chatbot, and adding their personalized checklists. The app leverages artificial intelligence to provide personalized health insights, track wellness metrics, and offer guidance for maintaining a healthy lifestyle. Available on iOS and web, Healthy serves as your personal health coach, making it easier to manage and understand your health data in one centralized location. The app is built in compliance with HIPPA and with user privacy in mind.',
     website: 'https://app.getHealthy.com',
     appStore: 'https://apps.apple.com/us/app/healthy-habit-health-coach/id6473211484',
   },
