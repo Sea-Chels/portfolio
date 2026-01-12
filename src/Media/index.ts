@@ -52,7 +52,7 @@ export const projects: Project[] = [
     path: healthy,
     alt: 'Healthy - AI-driven health app',
     description:
-      'An AI-driven health platform designed to help users track their symptoms, body measurements, and food and stay healthy. Users can make a plan and stick to it, using notifications, chatting with their personalized chatbot, and adding their personalized checklists. The app leverages artificial intelligence to provide personalized health insights, track wellness metrics, and offer guidance for maintaining a healthy lifestyle. Available on iOS and web, Healthy serves as your personal health coach, making it easier to manage and understand your health data in one centralized location. The app is built in compliance with HIPPA and with user privacy in mind.',
+      'As a part of a small start-up based team, I helped deliver Healthy, an AI-driven health platform designed to help users track their symptoms, body measurements, and food and stay healthy. Users can make a plan and stick to it, using notifications, chatting with their personalized chatbot, and adding their personalized checklists. The app leverages artificial intelligence to provide personalized health insights, track wellness metrics, and offer guidance for maintaining a healthy lifestyle. Available on iOS and web, Healthy serves as your personal health coach, making it easier to manage and understand your health data in one centralized location. The app is built in compliance with HIPPA and with user privacy in mind. This app leaverages cutting-edge technology using a monorepo based structure, Typescript, React Native, and Python to create fluid interfaces, and cross-platform capabilities. From pre-launch to present day, I helped the app become what it is today. ',
     website: 'https://app.getHealthy.com',
     appStore: 'https://apps.apple.com/us/app/healthy-habit-health-coach/id6473211484',
   },
@@ -70,7 +70,7 @@ export const projects: Project[] = [
     alt: 'artists portfolio',
     description:
       "An artist's portfolio website built with React, React Router, Ant Design, and AntD Icon libraries. Navigate through a curated collection of artwork seamlessly organized into intuitive categories. With React's dynamic rendering and React Router's smooth navigation, browse through the artist's diverse portfolio effortlessly. The elegant UI elements from Ant Design enhance the aesthetic appeal, while the rich variety of AntD icons adds visual depth to every page. Experience a visually stunning and user-friendly platform to showcase the artist's talent and creativity.",
-    website: 'https://www.spudmd.com/',
+    // website: 'https://www.spudmd.com/',
     link: 'https://github.com/Sea-Chels/Aaron-Portfolio',
   },
   {
