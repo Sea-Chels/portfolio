@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { projects } from '../Media'
 import ProjectItem from './ProjectItem'
+import ContactFormModal from './ContactFormModal'
 
 type ThemeMode = 'light' | 'dark'
 
@@ -40,6 +41,7 @@ function useTypingEffect(text: string, speed: number = 50, startDelay: number = 
 
 function LandingPage({ themeMod }: LandingPageProps) {
   const [showContent, setShowContent] = useState(false)
+  const [showContactModal, setShowContactModal] = useState(false)
   const projectsRef = useRef<HTMLDivElement>(null)
 
   const greeting = useTypingEffect('> hello world', 80, 300)
@@ -208,14 +210,20 @@ function LandingPage({ themeMod }: LandingPageProps) {
           <p className="text-lg text-[var(--text-secondary)] mb-10">
             Let's turn your vision into reality.
           </p>
-          <a
-            href="mailto:csallady.work@gmail.com"
+          <button
+            onClick={() => setShowContactModal(true)}
             className="btn-hacker inline-block text-base"
           >
             Get In Touch
-          </a>
+          </button>
         </div>
       </section>
+
+      {/* Contact Form Modal */}
+      <ContactFormModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+      />
     </div>
   )
 }

@@ -7,10 +7,13 @@ import {
   FileTextOutlined,
   CodeOutlined,
   MessageOutlined,
+  DownOutlined,
+  UpOutlined,
 } from '@ant-design/icons'
 import aboutHero from '../Media/about-hero.png'
 import resume from '../Media/CLSallady_Resume.pdf'
 import PhysicsText from './ui/PhysicsText'
+import ContactForm from './ContactForm'
 
 const allSkills = [
   'JavaScript',
@@ -61,11 +64,6 @@ const socialLinks = [
     href: 'https://www.instagram.com/seachels_downunder',
     label: 'Instagram',
   },
-  {
-    icon: MailOutlined,
-    href: 'mailto:csallady.work@gmail.com',
-    label: 'Email',
-  },
 ]
 
 function AboutPage() {
@@ -73,6 +71,7 @@ function AboutPage() {
   const [showResumeModal, setShowResumeModal] = useState(false)
   const [resumeCode, setResumeCode] = useState('')
   const [codeError, setCodeError] = useState(false)
+  const [showContactForm, setShowContactForm] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100)
@@ -225,12 +224,12 @@ Today, I'm dedicated to crafting impactful and user-centric software solutions, 
           in between, I'm here to help.
         </p>
 
-        <p className="text-xl text-accent font-display mb-12">
+        <p className="text-xl text-accent font-bold mb-8">
           Let's turn your vision into code!
         </p>
 
         {/* Social Links */}
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 mb-8">
           {socialLinks.map((social) => (
             <a
               key={social.label}
@@ -245,6 +244,37 @@ Today, I'm dedicated to crafting impactful and user-centric software solutions, 
               </span>
             </a>
           ))}
+        </div>
+
+        {/* Contact Form Dropdown */}
+        <div className="max-w-lg">
+          <button
+            onClick={() => setShowContactForm(!showContactForm)}
+            className="w-full flex items-center justify-between px-6 py-4 border border-[var(--border)] rounded-lg hover:border-accent transition-all duration-300 group"
+          >
+            <span className="flex items-center gap-3">
+              <MessageOutlined className="text-xl text-accent" />
+              <span className="text-[var(--text-secondary)] group-hover:text-accent transition-colors font-mono">
+                Send me a message
+              </span>
+            </span>
+            {showContactForm ? (
+              <UpOutlined className="text-accent" />
+            ) : (
+              <DownOutlined className="text-accent" />
+            )}
+          </button>
+
+          {/* Collapsible Form */}
+          <div
+            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              showContactForm ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'
+            }`}
+          >
+            <div className="pt-6">
+              <ContactForm />
+            </div>
+          </div>
         </div>
       </section>
 
