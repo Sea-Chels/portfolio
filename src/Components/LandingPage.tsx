@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { projects } from '../Media'
 import ProjectItem from './ProjectItem'
-import { Particles } from './ui'
 
 type ThemeMode = 'light' | 'dark'
 
@@ -9,13 +8,46 @@ interface LandingPageProps {
   themeMod: ThemeMode
 }
 
-function LandingPage({ themeMod }: LandingPageProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const projectsRef = useRef<HTMLDivElement>(null)
+// Typing animation hook
+function useTypingEffect(text: string, speed: number = 50, startDelay: number = 0) {
+  const [displayedText, setDisplayedText] = useState('')
+  const [isComplete, setIsComplete] = useState(false)
 
   useEffect(() => {
-    // Trigger animations after mount
-    const timer = setTimeout(() => setIsVisible(true), 100)
+    setDisplayedText('')
+    setIsComplete(false)
+
+    const startTimeout = setTimeout(() => {
+      let index = 0
+      const interval = setInterval(() => {
+        if (index < text.length) {
+          setDisplayedText(text.slice(0, index + 1))
+          index++
+        } else {
+          setIsComplete(true)
+          clearInterval(interval)
+        }
+      }, speed)
+
+      return () => clearInterval(interval)
+    }, startDelay)
+
+    return () => clearTimeout(startTimeout)
+  }, [text, speed, startDelay])
+
+  return { displayedText, isComplete }
+}
+
+function LandingPage({ themeMod }: LandingPageProps) {
+  const [showContent, setShowContent] = useState(false)
+  const projectsRef = useRef<HTMLDivElement>(null)
+
+  const greeting = useTypingEffect('> hello world', 80, 300)
+  const name = useTypingEffect('Chelby Sallady', 100, 1500)
+  const title = useTypingEffect('Full Stack Developer', 60, 3200)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowContent(true), 4500)
     return () => clearTimeout(timer)
   }, [])
 
@@ -25,88 +57,93 @@ function LandingPage({ themeMod }: LandingPageProps) {
     projectsRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  // Particle colors based on theme
-  const particleColors =
-    themeMod === 'dark'
-      ? ['#FF7A64', '#ff8f7d', '#fb923c', '#2a2a2a']
-      : ['#FF7A64', '#ff8f7d', '#e0e0e0', '#d4d4d4']
-
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background */}
-        <Particles
-          particleCount={150}
-          particleSpread={15}
-          speed={0.05}
-          particleColors={particleColors}
-          moveParticlesOnHover={true}
-          particleHoverFactor={1}
-          alphaParticles={true}
-          particleBaseSize={80}
-          sizeRandomness={1.5}
-          cameraDistance={25}
-          className="opacity-60"
-        />
+      {/* Hero Section - Terminal Style */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Grid background */}
+        <div className="absolute inset-0 grid-bg opacity-20 pointer-events-none" />
 
-        {/* Grid overlay for hacker aesthetic */}
-        <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
+        {/* Terminal Window */}
+        <div className="relative z-10 w-full max-w-3xl mx-auto">
+          {/* Terminal Chrome */}
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg overflow-hidden shadow-2xl">
+            {/* Terminal Header */}
+            <div className="flex items-center gap-2 px-4 py-3 bg-[var(--elevated)] border-b border-[var(--border)]">
+              <div className="w-3 h-3 rounded-full bg-red-500/80" />
+              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+              <div className="w-3 h-3 rounded-full bg-green-500/80" />
+              <span className="ml-4 font-mono text-sm text-[var(--text-muted)]">
+                ~/chelby-sallady
+              </span>
+            </div>
 
-        {/* Content */}
-        <div className="relative z-10 text-center px-8 max-w-4xl mx-auto">
-          {/* Terminal-style greeting */}
-          <div
-            className={`font-mono text-base text-[var(--text-muted)] mb-8 leading-normal transition-all duration-700 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            <span className="text-accent">{'>'}</span> hello world
+            {/* Terminal Content */}
+            <div className="p-8 md:p-12 font-mono">
+              {/* Greeting line */}
+              <div className="text-accent text-lg md:text-xl mb-6">
+                {greeting.displayedText}
+                {!greeting.isComplete && (
+                  <span className="animate-pulse">_</span>
+                )}
+              </div>
+
+              {/* Name */}
+              <h1 className="text-4xl md:text-6xl font-bold text-[var(--text-primary)] mb-4 tracking-tight">
+                {name.displayedText}
+                {greeting.isComplete && !name.isComplete && (
+                  <span className="animate-pulse text-accent">_</span>
+                )}
+              </h1>
+
+              {/* Title */}
+              <div className="text-xl md:text-2xl text-[var(--text-secondary)] mb-8">
+                {title.displayedText}
+                {name.isComplete && !title.isComplete && (
+                  <span className="animate-pulse text-accent">_</span>
+                )}
+              </div>
+
+              {/* Description - appears after typing */}
+              <p
+                className={`text-[var(--text-muted)] text-base md:text-lg leading-relaxed mb-10 max-w-xl transition-all duration-700 ${
+                  showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                }`}
+              >
+                Crafting elegant digital experiences with clean code and creative
+                vision. From pixel-perfect UIs to robust backend systems.
+              </p>
+
+              {/* Command prompt with CTA */}
+              <div
+                className={`transition-all duration-700 delay-200 ${
+                  showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                }`}
+              >
+                <div className="flex items-center gap-3 text-[var(--text-muted)] mb-6">
+                  <span className="text-accent">$</span>
+                  <span>view --projects</span>
+                </div>
+
+                <button
+                  onClick={scrollToProjects}
+                  className="btn-hacker"
+                >
+                  Execute
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* Name */}
-          <h1
-            className={`font-display text-6xl md:text-8xl text-accent mb-10 leading-tight transition-all duration-700 delay-100 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            Chelby Sallady
-          </h1>
-
-          {/* Tagline */}
-          <p
-            className={`text-xl md:text-2xl text-[var(--text-secondary)] mb-10 leading-relaxed transition-all duration-700 delay-200 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            Full Stack Developer & Creative Technologist
-          </p>
-
-          {/* Description */}
-          <p
-            className={`text-base md:text-lg text-[var(--text-muted)] max-w-2xl mx-auto mb-16 leading-loose transition-all duration-700 delay-300 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            Crafting elegant digital experiences with clean code and creative
-            vision. From pixel-perfect UIs to robust backend systems.
-          </p>
-
-          {/* CTA Button */}
-          <button
-            onClick={scrollToProjects}
-            className={`btn-hacker transition-all duration-700 delay-400 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            View My Work
-          </button>
+          {/* Decorative elements */}
+          <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b-2 border-r-2 border-accent/30 rounded-br-lg" />
+          <div className="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-accent/30 rounded-tl-lg" />
         </div>
 
         {/* Scroll indicator */}
         <div
-          className={`absolute bottom-8 left-1/2 -translate-x-1/2 transition-all duration-700 delay-500 ${
-            isVisible ? 'opacity-100' : 'opacity-0'
+          className={`absolute bottom-8 left-1/2 -translate-x-1/2 transition-all duration-700 ${
+            showContent ? 'opacity-100' : 'opacity-0'
           }`}
         >
           <div className="flex flex-col items-center gap-2 text-[var(--text-muted)]">
@@ -123,15 +160,15 @@ function LandingPage({ themeMod }: LandingPageProps) {
         className="py-24"
       >
         {/* Section Header */}
-        <div className="max-w-7xl mx-auto mb-20">
+        <div className="mb-16">
           <div className="flex items-center gap-4 mb-6">
             <span className="font-mono text-accent text-base">01</span>
             <div className="h-px flex-1 bg-gradient-to-r from-accent/50 to-transparent" />
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-[var(--text-primary)] mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
             Selected Work
           </h2>
-          <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl leading-relaxed">
+          <p className="text-lg text-[var(--text-secondary)] max-w-2xl leading-relaxed">
             A collection of projects showcasing my expertise in full-stack
             development, from healthcare platforms to creative applications.
           </p>
@@ -171,7 +208,7 @@ function LandingPage({ themeMod }: LandingPageProps) {
             Let's turn your vision into reality.
           </p>
           <a
-            href="mailto:your-email@example.com"
+            href="mailto:csallady.work@gmail.com"
             className="btn-hacker inline-block text-base"
           >
             Get In Touch

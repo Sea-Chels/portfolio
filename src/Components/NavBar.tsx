@@ -21,12 +21,14 @@ function NavBar({ currentPage, setCurrentPage }: NavBarProps) {
     <nav className="sticky top-0 z-50 backdrop-blur-md bg-[var(--bg)]/80 border-b border-[var(--border)]">
       <div className="mx-auto px-6 md:px-10 lg:px-12 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo / Name */}
+          {/* Logo */}
           <button
             onClick={() => setCurrentPage('dev')}
-            className="font-display text-2xl text-accent hover:text-accent-hover transition-colors"
+            className="group flex items-center gap-1 font-mono text-xl text-accent hover:text-accent-hover transition-colors"
           >
-            Chelby Sallady
+            <span className="text-[var(--text-muted)] group-hover:text-accent transition-colors">&lt;</span>
+            <span>CS</span>
+            <span className="text-[var(--text-muted)] group-hover:text-accent transition-colors">/&gt;</span>
           </button>
 
           {/* Navigation Links */}

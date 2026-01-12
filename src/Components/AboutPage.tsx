@@ -10,27 +10,40 @@ import {
 } from '@ant-design/icons'
 import aboutHero from '../Media/about-hero.png'
 import resume from '../Media/CLSallady_Resume.pdf'
+import PhysicsText from './ui/PhysicsText'
 
-const skills = [
-  { name: 'JavaScript/ES6+', category: 'language' },
-  { name: 'TypeScript', category: 'language' },
-  { name: 'Python', category: 'language' },
-  { name: 'React.js', category: 'frontend' },
-  { name: 'React Native', category: 'frontend' },
-  { name: 'Node.js', category: 'backend' },
-  { name: 'Express.js', category: 'backend' },
-  { name: 'PostgreSQL', category: 'database' },
-  { name: 'MongoDB', category: 'database' },
-  { name: 'GraphQL', category: 'backend' },
-  { name: 'Apollo', category: 'backend' },
-  { name: 'RESTful APIs', category: 'backend' },
-  { name: 'AWS Cloud', category: 'devops' },
-  { name: 'SAML/SSO Auth', category: 'backend' },
-  { name: 'Sequelize', category: 'database' },
-  { name: 'Figma', category: 'design' },
-  { name: 'Adobe Suite', category: 'design' },
-  { name: 'UX/UI Design', category: 'design' },
+const allSkills = [
+  'JavaScript',
+  'TypeScript',
+  'Python',
+  'React',
+  'React-Native',
+  'Node.js',
+  'Express',
+  'PostgreSQL',
+  'MongoDB',
+  'GraphQL',
+  'Apollo',
+  'REST-APIs',
+  'AWS',
+  'SSO/SAML',
+  'Sequelize',
+  'Prompt-Engineering',
+  'Figma',
+  'Adobe',
+  'UX/UI',
+  'AI-Workflows',
+  'GitHub-Actions',
+  'SQL',
+  'TDD',
+  'Vite',
+  'AI/ML',
+  'Jest',
+  'Storybook',
+  'Playwright',
 ]
+
+const highlightSkills = ['React', 'TypeScript', 'Node.js', 'GraphQL', 'AWS', 'AI-Workflows', 'Prompt-Engineering', 'TDD']
 
 const socialLinks = [
   {
@@ -57,11 +70,26 @@ const socialLinks = [
 
 function AboutPage() {
   const [isVisible, setIsVisible] = useState(false)
+  const [showResumeModal, setShowResumeModal] = useState(false)
+  const [resumeCode, setResumeCode] = useState('')
+  const [codeError, setCodeError] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
   }, [])
+
+  const handleResumeSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (resumeCode === '2672') {
+      window.open(resume, '_blank')
+      setShowResumeModal(false)
+      setResumeCode('')
+      setCodeError(false)
+    } else {
+      setCodeError(true)
+    }
+  }
 
   const bioText = `Hello, I'm a Full-Stack Software Engineer with an unconventional yet enriching journey. From my roots in design, I've cultivated a unique blend of communication, problem-solving, and creative thinking. As a lead graphic designer, I honed my skills in user-centric design, intertwining form with function to amplify brand narratives and resonate with audiences.
 
@@ -107,15 +135,13 @@ Today, I'm dedicated to crafting impactful and user-centric software solutions, 
           <div>
             {/* Quick Action Buttons */}
             <div className="flex flex-wrap gap-3 mb-8">
-              <a
-                href={resume}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                onClick={() => setShowResumeModal(true)}
                 className="btn-hacker inline-flex items-center gap-2"
               >
                 <FileTextOutlined />
                 Resume
-              </a>
+              </button>
               <a
                 href="#skills"
                 className="px-5 py-3 border border-[var(--border)] text-[var(--text-secondary)] font-mono text-sm uppercase tracking-wider hover:border-accent hover:text-accent transition-all duration-300 inline-flex items-center gap-2"
@@ -157,26 +183,29 @@ Today, I'm dedicated to crafting impactful and user-centric software solutions, 
         <h2 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
           Skills & Technologies
         </h2>
-        <p className="text-lg text-[var(--text-muted)] mb-12 max-w-2xl">
+        <p className="text-lg text-[var(--text-muted)] mb-8 max-w-2xl">
           A toolkit built through years of design and development experience.
         </p>
 
-        {/* Skills Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {skills.map((skill, index) => (
-            <div
-              key={skill.name}
-              className="group p-4 card-hacker hover:border-accent/50 transition-all duration-300"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-accent group-hover:animate-pulse" />
-                <span className="text-[var(--text-primary)] font-medium">
-                  {skill.name}
-                </span>
-              </div>
-            </div>
-          ))}
+        {/* Physics Text Skills */}
+        <div className="relative h-[400px] border border-[var(--border)] rounded-xl bg-[var(--surface)] overflow-hidden group">
+          <PhysicsText
+            text={allSkills.join(' ')}
+            highlightWords={highlightSkills}
+            highlightClass="text-accent"
+            backgroundColor="transparent"
+            gravity={0}
+            mouseConstraintStiffness={0.3}
+            fontSize="1.5rem"
+            fontFamily="'JetBrains Mono', monospace"
+          />
+          {/* Interaction hint */}
+          <div className="absolute bottom-4 right-4 flex items-center gap-2 text-[var(--text-muted)] text-sm font-mono opacity-60 group-hover:opacity-0 transition-opacity duration-300 pointer-events-none">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+            </svg>
+            <span>drag to play</span>
+          </div>
         </div>
       </section>
 
@@ -218,6 +247,80 @@ Today, I'm dedicated to crafting impactful and user-centric software solutions, 
           ))}
         </div>
       </section>
+
+      {/* Resume Code Modal */}
+      {showResumeModal && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          onClick={() => {
+            setShowResumeModal(false)
+            setResumeCode('')
+            setCodeError(false)
+          }}
+        >
+          <div
+            className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                <FileTextOutlined className="text-accent text-xl" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-[var(--text-primary)]">
+                  Access Resume
+                </h3>
+                <p className="text-sm text-[var(--text-muted)]">
+                  Enter the access code to view
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={handleResumeSubmit}>
+              <div className="mb-4">
+                <input
+                  type="text"
+                  value={resumeCode}
+                  onChange={(e) => {
+                    setResumeCode(e.target.value)
+                    setCodeError(false)
+                  }}
+                  placeholder="Enter code"
+                  autoFocus
+                  className={`w-full px-4 py-3 bg-[var(--bg)] border rounded-lg font-mono text-center text-lg tracking-widest text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-accent transition-colors ${
+                    codeError ? 'border-red-500' : 'border-[var(--border)]'
+                  }`}
+                />
+                {codeError && (
+                  <p className="text-red-500 text-sm mt-2 font-mono">
+                    Invalid code. Try again.
+                  </p>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResumeModal(false)
+                    setResumeCode('')
+                    setCodeError(false)
+                  }}
+                  className="flex-1 px-4 py-3 border border-[var(--border)] text-[var(--text-secondary)] font-mono text-sm uppercase tracking-wider hover:border-accent hover:text-accent transition-all duration-300 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 btn-hacker"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
