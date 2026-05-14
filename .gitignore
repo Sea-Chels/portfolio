@@ -36,3 +36,5 @@ coverage/
 # misc
 *.tgz
 .yarn-integrity
+
+.claude

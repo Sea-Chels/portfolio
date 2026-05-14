@@ -46,7 +46,7 @@ function LandingPage({ themeMod }: LandingPageProps) {
 
   const greeting = useTypingEffect('> hello world', 80, 300)
   const name = useTypingEffect('Chelby Sallady', 100, 1500)
-  const title = useTypingEffect('Full Stack Developer', 60, 3200)
+  const title = useTypingEffect('Full Stack Engineer', 60, 3200)
 
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), 4500)

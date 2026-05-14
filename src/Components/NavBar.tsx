@@ -1,5 +1,6 @@
 import { useTheme } from '../context/ThemeContext'
 import ScrollIntoView from 'react-scroll-into-view'
+import GlassSurface from './ui/GlassSurface'
 
 type Page = 'dev' | 'about' | 'art'
 
@@ -18,9 +19,18 @@ function NavBar({ currentPage, setCurrentPage }: NavBarProps) {
   ]
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md bg-[var(--bg)]/80 border-b border-[var(--border)]">
-      <div className="mx-auto px-6 md:px-10 lg:px-12 py-4">
-        <div className="flex items-center justify-between">
+    <nav className="sticky top-0 z-50">
+      <GlassSurface
+        width="100%"
+        height={72}
+        borderRadius={0}
+        backgroundOpacity={0.55}
+        blur={11}
+        contentClassName="w-full h-full rounded-[inherit] relative z-10"
+        style={{ boxShadow: 'none', border: 'none' }}
+      >
+        <div className="w-full h-full flex items-center px-6 md:px-10 lg:px-12">
+          <div className="flex-1 flex items-center justify-between">
           {/* Logo */}
           <button
             onClick={() => setCurrentPage('dev')}
@@ -100,8 +110,9 @@ function NavBar({ currentPage, setCurrentPage }: NavBarProps) {
               )}
             </button>
           </div>
+          </div>
         </div>
-      </div>
+      </GlassSurface>
     </nav>
   )
 }

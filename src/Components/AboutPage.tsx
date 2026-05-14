@@ -2,18 +2,14 @@ import { useState, useEffect } from 'react'
 import {
   LinkedinOutlined,
   GithubOutlined,
-  InstagramOutlined,
-  MailOutlined,
   FileTextOutlined,
   CodeOutlined,
   MessageOutlined,
-  DownOutlined,
-  UpOutlined,
 } from '@ant-design/icons'
 import aboutHero from '../Media/about-hero.png'
 import resume from '../Media/CLSallady_Resume.pdf'
 import PhysicsText from './ui/PhysicsText'
-import ContactForm from './ContactForm'
+import ContactFormModal from './ContactFormModal'
 
 const allSkills = [
   'JavaScript',
@@ -58,12 +54,7 @@ const socialLinks = [
     icon: GithubOutlined,
     href: 'https://github.com/Sea-Chels',
     label: 'GitHub',
-  },
-  {
-    icon: InstagramOutlined,
-    href: 'https://www.instagram.com/seachels_downunder',
-    label: 'Instagram',
-  },
+  }
 ]
 
 function AboutPage() {
@@ -72,6 +63,12 @@ function AboutPage() {
   const [resumeCode, setResumeCode] = useState('')
   const [codeError, setCodeError] = useState(false)
   const [showContactForm, setShowContactForm] = useState(false)
+
+  const closeResumeModal = () => {
+    setShowResumeModal(false)
+    setResumeCode('')
+    setCodeError(false)
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100)
@@ -90,11 +87,11 @@ function AboutPage() {
     }
   }
 
-  const bioText = `Hello, I'm a Full-Stack Software Engineer with an unconventional yet enriching journey. From my roots in design, I've cultivated a unique blend of communication, problem-solving, and creative thinking. As a lead graphic designer, I honed my skills in user-centric design, intertwining form with function to amplify brand narratives and resonate with audiences.
+  const bioText = `Hello, I'm a full-stack software engineer who came to code through design. Before engineering, I worked as a lead graphic designer, where I learned to think about users, narrative, and how a product should feel before deciding how to build it.
 
-Intrigued by the prospect of merging creativity with technology, I transitioned into software engineering, enrolling in a full-stack web development bootcamp to delve into the intricate world of coding.
+These days, I ship across the stack on consumer products and healthcare-grade platforms, architecting backend services, building React frontends, and owning end-to-end feature delivery. Recent work has leaned heavily on AI-assisted development: custom Claude Code plugins, GitHub Actions automation, and AI-augmented PR review, alongside foundational engineering work like feature flags, schema design, and codebase migrations.
 
-Today, I'm dedicated to crafting impactful and user-centric software solutions, driven by the belief that the fusion of design and technology can foster transformative experiences.`
+What carried over from the design days hasn't gone away. I care as much about how a thing feels to use as whether the tests pass.`
 
   return (
     <div className="min-h-screen py-16">
@@ -246,51 +243,36 @@ Today, I'm dedicated to crafting impactful and user-centric software solutions, 
           ))}
         </div>
 
-        {/* Contact Form Dropdown */}
+        {/* Contact Modal Trigger */}
         <div className="max-w-lg">
           <button
-            onClick={() => setShowContactForm(!showContactForm)}
-            className="w-full flex items-center justify-between px-6 py-4 border border-[var(--border)] rounded-lg hover:border-accent transition-all duration-300 group"
+            onClick={() => setShowContactForm(true)}
+            className="w-full flex items-center gap-3 px-6 py-4 border border-[var(--border)] rounded-lg hover:border-accent transition-all duration-300 group"
           >
-            <span className="flex items-center gap-3">
-              <MessageOutlined className="text-xl text-accent" />
-              <span className="text-[var(--text-secondary)] group-hover:text-accent transition-colors font-mono">
-                Send me a message
-              </span>
+            <MessageOutlined className="text-xl text-accent" />
+            <span className="text-[var(--text-secondary)] group-hover:text-accent transition-colors font-mono">
+              Send me a message
             </span>
-            {showContactForm ? (
-              <UpOutlined className="text-accent" />
-            ) : (
-              <DownOutlined className="text-accent" />
-            )}
           </button>
-
-          {/* Collapsible Form */}
-          <div
-            className={`overflow-hidden transition-all duration-300 ease-in-out ${
-              showContactForm ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'
-            }`}
-          >
-            <div className="pt-6">
-              <ContactForm />
-            </div>
-          </div>
         </div>
       </section>
+
+      {/* Contact Modal */}
+      <ContactFormModal
+        isOpen={showContactForm}
+        onClose={() => setShowContactForm(false)}
+      />
 
       {/* Resume Code Modal */}
       {showResumeModal && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
-          onClick={() => {
-            setShowResumeModal(false)
-            setResumeCode('')
-            setCodeError(false)
-          }}
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={closeResumeModal}
         >
           <div
             className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 max-w-md w-full"
             onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
@@ -331,19 +313,12 @@ Today, I'm dedicated to crafting impactful and user-centric software solutions, 
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowResumeModal(false)
-                    setResumeCode('')
-                    setCodeError(false)
-                  }}
+                  onClick={closeResumeModal}
                   className="flex-1 px-4 py-3 border border-[var(--border)] text-[var(--text-secondary)] font-mono text-sm uppercase tracking-wider hover:border-accent hover:text-accent transition-all duration-300 rounded-lg"
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="flex-1 btn-hacker"
-                >
+                <button type="submit" className="flex-1 btn-hacker">
                   Submit
                 </button>
               </div>

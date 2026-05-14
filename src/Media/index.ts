@@ -1,13 +1,16 @@
 // web dev gif imports--------------------------------------
-import githubSearch from './vid_githubOrgSearch.gif'
 import mmConverter from './vid_milimeterConverter.gif'
-import passwordGenerator from './vid_passwordGenerator.gif'
-import weatherDashboard from './vid_weatherDashboard.gif'
-import jsQuiz from './vid_jsQuiz.gif'
-import communityCookbook from './vid_communityCookbook.gif'
 import artistPortfolio from './artist-portfolio.gif'
-import healthy from './healthy.png'
+import closedloop from './closedloop-logo.png'
+import zipdrug from './zipdrug-logo.webp'
+import sanctuary from './sanctuary-logo.png'
 // artwork imports------------------------------------------
+import bonnieAndClyde from './personalWork/a_bonnie-and-clyde.png'
+import chillWitch from './personalWork/a_chill-witch.png'
+import frogGiveUp from './personalWork/a_frog-give-up.png'
+import granolaGhost from './personalWork/a_granola-ghost-illustration.png'
+import screamingRaccoon from './personalWork/a_screaming-raccoon.png'
+import witchCat from './personalWork/a_witch-cat.png'
 import photo1 from './personalWork/photo-1.jpeg'
 import photo2 from './personalWork/photo-2.jpeg'
 import photo4 from './personalWork/photo-4.jpeg'
@@ -17,7 +20,6 @@ import photo7 from './personalWork/photo-7.jpeg'
 import photo9 from './personalWork/photo-9.jpeg'
 import photo10 from './personalWork/photo-10.jpeg'
 import photo11 from './personalWork/photo-11.jpeg'
-import photo12 from './personalWork/photo-12.jpeg'
 import photo13 from './personalWork/photo-13.jpeg'
 import photo14 from './personalWork/photo-14.jpeg'
 import photo16 from './personalWork/photo-16.jpeg'
@@ -48,86 +50,62 @@ export interface Artwork {
 
 export const projects: Project[] = [
   {
-    title: 'Healthy',
-    path: healthy,
-    alt: 'Healthy - AI-driven health app',
+    title: 'Sanctuary Innovations',
+    path: sanctuary,
+    alt: 'Sanctuary Innovations logo',
     description:
-      'As a part of a small start-up based team, I helped deliver Healthy, an AI-driven health platform designed to help users track their symptoms, body measurements, and food and stay healthy. Users can make a plan and stick to it, using notifications, chatting with their personalized chatbot, and adding their personalized checklists. The app leverages artificial intelligence to provide personalized health insights, track wellness metrics, and offer guidance for maintaining a healthy lifestyle. Available on iOS and web, Healthy serves as your personal health coach, making it easier to manage and understand your health data in one centralized location. The app is built in compliance with HIPPA and with user privacy in mind. This app leaverages cutting-edge technology using a monorepo based structure, Typescript, React Native, and Python to create fluid interfaces, and cross-platform capabilities. From pre-launch to present day, I helped the app become what it is today. ',
-    website: 'https://app.getHealthy.com',
+      "As a full-stack engineer at Sanctuary Innovations, I contributed across multiple areas of the company's consumer platform — architecting backend services for new features, implementing feature flags for safe progressive rollouts, and shipping end-to-end user-facing functionality with privacy and platform stability as priorities. I also led a full migration of the codebase from Create React App to Vite, which unblocked dependency upgrades, resolved long-standing security vulnerabilities, and dramatically improved local build and HMR performance.\n To reduce code-review bottlenecks and raise consistency across the team, I built a custom Claude Code plugin tailored to the project's conventions and integrated AI-assisted PR reviews directly into the development workflow. Pairing hands-on AI tooling with architectural ownership and cross-functional collaboration, this role let me blend product engineering with meaningful platform-level improvements.",
+    website: 'https://www.sanctuaryinnovations.com/products',
+  },
+  {
+    title: 'ClosedLoop.ai',
+    path: closedloop,
+    alt: 'ClosedLoop company logo',
+    description:
+      "As an engineer at ClosedLoop.ai, I contributed to two distinct products across the company's evolution. I joined to help deliver Healthy — an AI-driven, HIPAA-compliant consumer health platform designed to help users track symptoms, body measurements, and nutrition while building sustainable wellness habits. The app paired a personalized chatbot, smart notifications, and customizable checklists with AI-generated insights, acting as a personal health coach across iOS and web. From pre-launch through the product's full lifecycle, I contributed across the stack — TypeScript, React Native, and Python in a monorepo architecture — shipping fluid, cross-platform interfaces. Healthy was later sunset as the company strategically pivoted toward a B2B SaaS offering in response to a shifting competitive landscape, but it remains available on the App Store as a snapshot of what the team built together.\n After the pivot, I shifted focus to ClosedLoop's SaaS platform, where I primarily owned the frontend and API surface for the company's web-formatting product. The codebase leaned heavily on Claude Code workflows and GitHub Actions to automate large portions of the development lifecycle — from scaffolding and code generation to PR review — letting a lean team ship at a much larger team's velocity. The work let me pair traditional product engineering with hands-on AI-driven developer-experience tooling, blending feature delivery with continuous improvements to how code itself got written and shipped.",
+    website: 'https://www.closedloop.ai/',
     appStore: 'https://apps.apple.com/us/app/healthy-habit-health-coach/id6473211484',
+    link: 'https://github.com/closedloop-ai',
   },
   {
     title: 'Zipdrug / CarelonRx',
-    path: 'https://imgs.search.brave.com/HpTwQ4RF9ZsfgqncMjjsGelbymXKjdOqwz6LkbNI_uk/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5saWNkbi5jb20v/ZG1zL2ltYWdlL0M1/NjFCQVFIRXExcDV3/Uy16MVEvY29tcGFu/eS1iYWNrZ3JvdW5k/XzEwMDAwLzAvMTU4/NTQ0MTEyMzk3Mi96/aXBkcnVnX2NvdmVy/P2U9MjE0NzQ4MzY0/NyZ2PWJldGEmdD12/VDRBQlp6R0U3QkVN/WTNVb1NKRlEwNkpX/bFRJMnZoUUw1a0F5/VVVWaGow',
+    path: zipdrug,
     alt: 'Zipdrug / CarelonRx website',
     description:
-      'As part of a collaborative full-stack team, I contributed to the development of a sophisticated pharmacy delivery service website for a company that later became part of Elevance Health. Leveraging modern technologies such as JavaScript, Python, React.js, Redux, Apollo Provider, Twilio, Higher Order Components, Sequelize, and Node.js, the platform was designed to meet the rigorous standards of the healthcare industry. \n Responsibilities encompassed both frontend and backend tasks. On the frontend, the focus was on crafting intuitive user interfaces using React.js and Redux. Meanwhile, backend duties involved developing endpoints, architecting GraphQL schemas, and managing large datasets containing protected health information (PHI).Throughout the project, emphasis was placed on ensuring the security and integrity of user data, particularly PHI. Additional responsibilities included integrating Twilio communication functionalities seamlessly into the platform, enhancing overall functionality and user engagement.\n This experience provided valuable opportunities to refine skills across a diverse technology stack and address complex challenges in a dynamic and demanding environment.',
-    website: 'https://github.com/zipdrug',
+      "As part of a full-stack team, I helped build a pharmacy delivery platform for a company that was later acquired by Elevance Health. The product routed prescriptions for patients with chronic conditions, with protected health information (PHI) flowing through nearly every layer of the system — making security and data integrity core requirements rather than afterthoughts.\n On the frontend, I built user-facing interfaces with React and Redux. On the backend, I developed GraphQL endpoints, architected schemas, and worked with large PHI-bearing datasets through Sequelize and Node.js. I also integrated Twilio for patient-facing communication flows. The stack spanned JavaScript, Python, React, Redux, Apollo, Sequelize, Node.js, and Twilio — giving me hands-on experience across a healthcare-grade codebase from interface to database.",
+    link: 'https://github.com/zipdrug',
+    website: 'https://www.carelonrx.com/',
   },
   {
     title: 'Artist Portfolio',
     path: artistPortfolio,
     alt: 'artists portfolio',
     description:
-      "An artist's portfolio website built with React, React Router, Ant Design, and AntD Icon libraries. Navigate through a curated collection of artwork seamlessly organized into intuitive categories. With React's dynamic rendering and React Router's smooth navigation, browse through the artist's diverse portfolio effortlessly. The elegant UI elements from Ant Design enhance the aesthetic appeal, while the rich variety of AntD icons adds visual depth to every page. Experience a visually stunning and user-friendly platform to showcase the artist's talent and creativity.",
+      "A portfolio site built for an artist to showcase their work, organized into browsable categories with smooth client-side routing. Built with React, React Router, and Ant Design — chosen to deliver a clean, gallery-friendly UI quickly without the overhead of bespoke design work. Lightweight in scope but focused: the goal was a clear, low-friction way for visitors to navigate a curated body of work.",
     // website: 'https://www.spudmd.com/',
     link: 'https://github.com/Sea-Chels/Aaron-Portfolio',
-  },
-  {
-    title: 'React Github Repository Search',
-    path: githubSearch,
-    alt: 'Github Repository search',
-    description:
-      "Designed as a quick project to demonstrate my React.js skills, this application showcased the integration of GitHub's repository search API into a functional React-based platform. By using asynchronous API calls, it fetched and displayed search results dynamically, highlighting its responsiveness and efficiency. \n Built with React, JavaScript, Express, and GitHub Pages, the project exemplified my ability to utilize modern technologies to create robust web applications. Despite the tight deadline, I focused on delivering a user-friendly experience while ensuring smooth performance. \n This project reflects my dedication to mastering React.js and my commitment to delivering quality results under pressure.",
-    website: 'https://Sea-Chels.github.io/Github-Org-Search-App',
-    link: 'https://github.com/Sea-Chels/Github-Org-Search-App',
-  },
-  {
-    title: 'Community Cookbook',
-    path: communityCookbook,
-    alt: 'community cookbook',
-    description:
-      "The Community Cookbook project aimed to simplify recipe exploration by allowing users to discover dishes based on ingredients they have at home while also showcasing the favorite recipes of various authors. My main contribution focused on refining the website's styling to ensure a more visually appealing and user-friendly interface.\n In collaboration with the team, I primarily focused on integrating APIs and developing RESTful APIs to enhance the platform's functionality. Additionally, I played a role in designing the frontend of the website to provide users with an intuitive browsing experience. Leveraging technologies like MongoDB, React, Express, Apollo Provider, and GraphQL, we created a robust platform capable of efficiently handling data interactions. \n Despite the project's modest origins, we worked together effectively to deliver a functional Community Cookbook that met our objectives. Through this experience, I gained valuable insights into frontend development, API integration, and collaborative project management.",
-    link: 'https://github.com/pjkingsley/Group_Project_3',
   },
   {
     title: 'React Millimeter Converter',
     path: mmConverter,
     alt: 'A gif of a wepage containing a simple input box that converts inches to millimeters',
     description:
-      "This application simplifies the conversion process from inches to millimeters. With Electron.js, it's transformed into a standalone .exe file for easy access on Windows, even without an internet connection. \n Originally designed for a CAD designer's convenience, this tool offers a straightforward solution that remains readily available, separate from standard browser windows. By combining Electron, React, and JavaScript, I created a user-friendly app tailored to meet specific needs.",
+      "A small desktop utility that converts inches to millimeters, packaged with Electron so it runs as a standalone Windows executable — usable offline and outside the browser entirely. Originally built for a CAD designer who needed a fast, always-accessible converter that lived next to their other tools instead of buried in a tab. Built with Electron, React, and JavaScript.",
     website: 'https://sea-chels.github.io/aarons-converter/',
     link: 'https://github.com/Sea-Chels/aarons-converter',
-  },
-  {
-    title: 'Password Generator',
-    path: passwordGenerator,
-    alt: 'An input box on a webpage that has a popup box asking what you want in your password, then generates it based on user input.',
-    description:
-      'This intuitive password generator employs confirm prompt boxes to tailor password criteria, allowing users to select preferences for numbers, symbols, capital letters, and lowercase letters. With user input as the foundation, it generates a personalized password, ensuring both security and ease of use.',
-    website: 'https://sea-chels.github.io/Password-Generator/',
-    link: 'https://github.com/Sea-Chels/Password-Generator',
-  },
-  {
-    title: 'Weather Dashboard',
-    path: weatherDashboard,
-    alt: 'A weather dashboard',
-    description:
-      'A weather dashboard created to deliver detailed forecasts for cities across the United States. This meticulously crafted application offers not only the upcoming five-day forecast but also essential weather metrics such as UV index, temperature fluctuations, wind speeds, and humidity levels. With its user-friendly interface and intuitive design, navigating through weather data has never been easier. Powered by a trusted third-party weather API, this dashboard ensures reliability and accuracy in providing real-time weather information. Stay informed and prepared for any weather condition with this sophisticated yet accessible weather tracking tool.',
-    website: 'https://sea-chels.github.io/Weather-Dashboard/',
-    link: 'https://github.com/Sea-Chels/Weather-Dashboard',
-  },
-  {
-    title: 'JavaScript Quiz',
-    path: jsQuiz,
-    alt: 'soon to be project',
-    description:
-      'An interactive JavaScript syntax quiz designed to challenge your knowledge while adding a touch of enjoyment with engaging questions. Crafted using basic JavaScript comparisons, the quiz seamlessly verifies answer accuracy, shuffles questions dynamically, calculates scores effortlessly, and enhances complexity by randomizing answer options for each question. Leveraging Vanilla JavaScript, this quiz serves as an effective learning resource, offering an immersive experience for participants.',
-    link: 'https://github.com/Sea-Chels/JS-Quiz',
   },
 ]
 
 export const artworks: Artwork[] = [
+  // --- Column 1 (top): two featured illustrations, then photos ---
+  {
+    path: bonnieAndClyde,
+    alt: 'Bonnie and Clyde illustration',
+  },
+  {
+    path: chillWitch,
+    alt: 'Chill witch illustration',
+  },
   {
     path: photo1,
     alt: 'soon to be project',
@@ -156,6 +134,15 @@ export const artworks: Artwork[] = [
     path: photo26,
     alt: 'soon to be project',
   },
+  // --- Column 2 (top): two featured illustrations, then photos ---
+  {
+    path: witchCat,
+    alt: 'Witch cat illustration',
+  },
+  {
+    path: granolaGhost,
+    alt: 'Granola ghost illustration',
+  },
   {
     path: photo6,
     alt: 'soon to be project',
@@ -177,12 +164,17 @@ export const artworks: Artwork[] = [
     alt: 'soon to be project',
   },
   {
-    path: photo12,
-    alt: 'soon to be project',
-  },
-  {
     path: photo13,
     alt: 'soon to be project',
+  },
+  // --- Column 3 (top): two featured illustrations, then photos ---
+  {
+    path: screamingRaccoon,
+    alt: 'Screaming raccoon illustration',
+  },
+  {
+    path: frogGiveUp,
+    alt: 'Frog giving up illustration',
   },
   {
     path: photo14,

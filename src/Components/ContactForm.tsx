@@ -5,6 +5,30 @@ import { Tooltip } from 'antd'
 // Get your free access key from https://web3forms.com/
 export const WEB3FORMS_ACCESS_KEY = 'c29a362b-dd97-4d9f-951a-54c64960941e'
 
+const RATE_LIMIT_STORAGE_KEY = 'portfolio-contact-last-sent'
+const RATE_LIMIT_MS = 7 * 24 * 60 * 60 * 1000 // one week
+
+function readStoredCooldown(): number | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(RATE_LIMIT_STORAGE_KEY)
+    if (!raw) return null
+    const lastSent = parseInt(raw, 10)
+    if (Number.isNaN(lastSent)) return null
+    const cooldownEnd = lastSent + RATE_LIMIT_MS
+    return cooldownEnd > Date.now() ? cooldownEnd : null
+  } catch {
+    return null
+  }
+}
+
+function formatCooldownDate(timestamp: number): string {
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'long',
+    timeStyle: 'short',
+  }).format(new Date(timestamp))
+}
+
 interface ContactFormProps {
   onSuccess?: () => void
   showCancelButton?: boolean
@@ -21,6 +45,9 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [emailTouched, setEmailTouched] = useState(false)
+  const [cooldownUntil, setCooldownUntil] = useState<number | null>(readStoredCooldown)
+
+  const isRateLimited = cooldownUntil !== null && cooldownUntil > Date.now()
 
   // Email validation regex
   const isValidEmail = (email: string) => {
@@ -49,6 +76,7 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isRateLimited) return
     setStatus('loading')
     setErrorMessage('')
 
@@ -70,6 +98,14 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
         setStatus('success')
         setFormData({ name: '', email: '', subject: '', message: '' })
         setEmailTouched(false)
+        const now = Date.now()
+        try {
+          window.localStorage.setItem(RATE_LIMIT_STORAGE_KEY, now.toString())
+        } catch {
+          // localStorage may be unavailable (private mode, quota); the in-memory
+          // cooldown still applies for the rest of the session.
+        }
+        setCooldownUntil(now + RATE_LIMIT_MS)
         onSuccess?.()
       } else {
         setStatus('error')
@@ -79,13 +115,6 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
       setStatus('error')
       setErrorMessage('Failed to send message. Please try again.')
     }
-  }
-
-  const resetForm = () => {
-    setStatus('idle')
-    setFormData({ name: '', email: '', subject: '', message: '' })
-    setEmailTouched(false)
-    setErrorMessage('')
   }
 
   if (status === 'success') {
@@ -98,12 +127,38 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
         <p className="text-[var(--text-secondary)] mb-4">
           Thank you for reaching out. I'll be in touch soon.
         </p>
-        <button
-          onClick={resetForm}
-          className="text-accent hover:underline font-mono text-sm"
-        >
-          Send another message
-        </button>
+        {cooldownUntil && (
+          <p className="text-[var(--text-muted)] text-sm font-mono">
+            You can send another message after{' '}
+            <span className="text-accent">{formatCooldownDate(cooldownUntil)}</span>.
+          </p>
+        )}
+      </div>
+    )
+  }
+
+  if (isRateLimited && cooldownUntil) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-[var(--text-primary)] font-semibold mb-2">
+          You've already sent a message recently.
+        </p>
+        <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
+          To prevent spam, the contact form is limited to one message per week. You
+          can reach out again after{' '}
+          <span className="text-accent font-mono">
+            {formatCooldownDate(cooldownUntil)}
+          </span>
+          .
+        </p>
+        {showCancelButton && onCancel && (
+          <button
+            onClick={onCancel}
+            className="mt-6 text-accent hover:underline font-mono text-sm"
+          >
+            Close
+          </button>
+        )}
       </div>
     )
   }

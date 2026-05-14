@@ -140,9 +140,12 @@ export default function PhysicsText({
     setIsReady(true)
     World.add(engine.world, bodies)
 
-    // Set up mouse constraint for dragging
+    // Set up mouse constraint for dragging.
+    // pixelRatio must match the canvas's backing-buffer scaling. Since we size
+    // canvas.width/height to CSS pixels (not CSS × DPR), keep this at 1 — otherwise
+    // Matter.js divides mouse coords by DPR and the drag point drifts off the cursor.
     const mouse = Mouse.create(canvas)
-    mouse.pixelRatio = window.devicePixelRatio || 1
+    mouse.pixelRatio = 1
 
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,

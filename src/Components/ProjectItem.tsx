@@ -127,7 +127,7 @@ function ProjectItem({
             {link && (
               <span className="text-sm text-accent">
                 <GithubOutlined className="mr-1" />
-                Open Source
+                GitHub
               </span>
             )}
             {website && (

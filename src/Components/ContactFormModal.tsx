@@ -22,7 +22,9 @@ function ContactFormModal({ isOpen, onClose }: ContactFormModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
           <div>
-            <h2 className="text-2xl font-bold text-[var(--text-primary)]">Get In Touch</h2>
+            <h2 className="text-2xl font-bold text-[var(--text-primary)]">
+              Get In Touch
+            </h2>
             <p className="text-sm text-[var(--text-muted)] mt-1">
               I'll get back to you as soon as possible
             </p>
