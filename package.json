@@ -10,13 +10,9 @@
 		"@fontsource/bangers": "^5.3.0",
 		"antd": "^5.10.0",
 		"framer-motion": "^12.25.0",
-		"gsap": "^3.14.2",
 		"matter-js": "^0.20.0",
-		"ogl": "^1.0.11",
-		"prop-types": "^15.8.1",
 		"react": "^19.3.1",
 		"react-dom": "^19.3.1",
-		"react-responsive-masonry": "^2.1.7",
 		"three": "^0.187.0"
 	},
 	"scripts": {
