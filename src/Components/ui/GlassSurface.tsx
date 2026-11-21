@@ -62,6 +62,61 @@ export interface GlassSurfaceProps {
   backdropBlur?: number
 }
 
+/** A soft drop shadow outside and in, the same in both themes. */
+const GLASS_DEPTH = `0px 4px 16px rgba(17, 17, 26, 0.05),
+             0px 8px 24px rgba(17, 17, 26, 0.05),
+             0px 16px 56px rgba(17, 17, 26, 0.05),
+             0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+             0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+             0px 16px 56px rgba(17, 17, 26, 0.05) inset`
+
+/** The lit inner edge: light on dark glass, dark on light glass. */
+const GLASS_RIM = {
+  dark: `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
+             0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset`,
+  light: `0 0 2px 1px color-mix(in oklch, black, transparent 85%) inset,
+             0 0 10px 4px color-mix(in oklch, black, transparent 90%) inset`,
+}
+
+const GLASS_FALLBACK = {
+  dark: {
+    solid: {
+      background: 'rgba(0, 0, 0, 0.55)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
+    },
+    blurred: {
+      backdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
+      WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
+      border: '1px solid rgba(255, 255, 255, 0.12)',
+      boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
+    },
+    tint: (alpha: number) => `rgba(0, 0, 0, ${alpha})`,
+  },
+  light: {
+    solid: {
+      background: 'rgba(255, 255, 255, 0.55)',
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)`,
+    },
+    blurred: {
+      backdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
+      WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.2),
+                        0 2px 16px 0 rgba(31, 38, 135, 0.1),
+                        inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
+                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.2)`,
+    },
+    tint: (alpha: number) => `rgba(255, 255, 255, ${alpha})`,
+  },
+} satisfies Record<'dark' | 'light', { solid: React.CSSProperties; blurred: React.CSSProperties; tint: (alpha: number) => string }>
+
+const supportsBackdropBlur = typeof CSS !== 'undefined' && CSS.supports('backdrop-filter', 'blur(10px)')
+
 const GlassSurface: React.FC<GlassSurfaceProps> = ({
   children,
   width = 200,
@@ -189,11 +244,6 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     }
   }, [])
 
-  const supportsBackdropFilter = () => {
-    if (typeof window === 'undefined') return false
-    return CSS.supports('backdrop-filter', 'blur(10px)')
-  }
-
   const getContainerStyles = (): React.CSSProperties => {
     const baseStyles: React.CSSProperties = {
       width: typeof width === 'number' ? `${width}px` : width,
@@ -202,101 +252,38 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
       ['--glass-frost' as string]: backgroundOpacity,
       ['--glass-saturation' as string]: saturation,
     } as React.CSSProperties
-
-    const backdropFilterSupported = supportsBackdropFilter()
+    const tone = isDarkMode ? 'dark' : 'light'
 
     if (svgSupported) {
       return {
         ...baseStyles,
-        background: isDarkMode
-          ? `hsl(0 0% 0% / ${backgroundOpacity})`
-          : `hsl(0 0% 100% / ${backgroundOpacity})`,
+        background: `hsl(0 0% ${tone === 'dark' ? 0 : 100}% / ${backgroundOpacity})`,
         backdropFilter: `url(#${filterId}) saturate(${saturation})${
           backdropBlur > 0 ? ` blur(${backdropBlur}px)` : ''
         }`,
-        boxShadow: isDarkMode
-          ? `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
-             0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
-             0px 4px 16px rgba(17, 17, 26, 0.05),
-             0px 8px 24px rgba(17, 17, 26, 0.05),
-             0px 16px 56px rgba(17, 17, 26, 0.05),
-             0px 4px 16px rgba(17, 17, 26, 0.05) inset,
-             0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-             0px 16px 56px rgba(17, 17, 26, 0.05) inset`
-          : `0 0 2px 1px color-mix(in oklch, black, transparent 85%) inset,
-             0 0 10px 4px color-mix(in oklch, black, transparent 90%) inset,
-             0px 4px 16px rgba(17, 17, 26, 0.05),
-             0px 8px 24px rgba(17, 17, 26, 0.05),
-             0px 16px 56px rgba(17, 17, 26, 0.05),
-             0px 4px 16px rgba(17, 17, 26, 0.05) inset,
-             0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-             0px 16px 56px rgba(17, 17, 26, 0.05) inset`,
+        boxShadow: `${GLASS_RIM[tone]}, ${GLASS_DEPTH}`,
         ...style,
       }
-    } else {
-      // Cross-browser fallback (Safari, Firefox, and SVG-filter-unsupported envs)
-      // — tinted backdrop blur, readable against any underlying content.
-      if (isDarkMode) {
-        if (!backdropFilterSupported) {
-          return {
-            ...baseStyles,
-            background: 'rgba(0, 0, 0, 0.55)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
-            ...style,
-          }
-        } else {
-          return {
-            ...baseStyles,
-            background: `rgba(0, 0, 0, ${Math.max(backgroundOpacity, 0.35)})`,
-            backdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
-            WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
-            ...style,
-          }
-        }
-      } else {
-        if (!backdropFilterSupported) {
-          return {
-            ...baseStyles,
-            background: 'rgba(255, 255, 255, 0.55)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)`,
-            ...style,
-          }
-        } else {
-          return {
-            ...baseStyles,
-            background: `rgba(255, 255, 255, ${Math.max(backgroundOpacity, 0.35)})`,
-            backdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
-            WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.2),
-                        0 2px 16px 0 rgba(31, 38, 135, 0.1),
-                        inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.2)`,
-            ...style,
-          }
-        }
-      }
+    }
+    // Cross-browser fallback (Safari, Firefox, and SVG-filter-unsupported envs)
+    // — tinted backdrop blur, readable against any underlying content.
+    const fallback = GLASS_FALLBACK[tone]
+    if (!supportsBackdropBlur) return { ...baseStyles, ...fallback.solid, ...style }
+    return {
+      ...baseStyles,
+      ...fallback.blurred,
+      background: fallback.tint(Math.max(backgroundOpacity, 0.35)),
+      ...style,
     }
   }
 
   const glassSurfaceClasses =
     'relative flex items-center justify-center overflow-hidden transition-opacity duration-[260ms] ease-out'
 
-  const focusVisibleClasses = isDarkMode
-    ? 'focus-visible:outline-2 focus-visible:outline-[#0A84FF] focus-visible:outline-offset-2'
-    : 'focus-visible:outline-2 focus-visible:outline-[#007AFF] focus-visible:outline-offset-2'
-
   return (
     <div
       ref={containerRef}
-      className={`${glassSurfaceClasses} ${focusVisibleClasses} ${className}`}
+      className={`${glassSurfaceClasses} ${className}`}
       style={getContainerStyles()}
     >
       <svg
