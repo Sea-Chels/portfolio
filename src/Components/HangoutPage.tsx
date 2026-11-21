@@ -1,11 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { mountHangout, type HangoutHandle } from '@sea-chels/hangout/engine'
+import { mountHangout, type HangoutHandle, type Presence } from '@sea-chels/hangout/engine'
 import { fallPark } from '@sea-chels/hangout/scenes/fall-park'
 import { useAnnounce } from '../a11y/announce'
 import { useReducedMotion } from '../a11y/useReducedMotion'
 import { must } from '../utils/must'
 import SectionMarker from './SectionMarker'
+import { presenceText } from './hangoutPresence'
+
+/** The shared park, a Cloudflare Durable Object from the hangout repo. Local dev joins the same room. */
+const ROOM_URL = 'wss://hangout.sea-chels-hangout.workers.dev/rooms/fall-park'
 
 function HangoutPage() {
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -13,12 +17,15 @@ function HangoutPage() {
   const announce = useAnnounce()
   const reducedMotion = useReducedMotion()
   const initialReducedMotion = useRef(reducedMotion)
+  const [presence, setPresence] = useState<Presence>({ status: 'connecting', others: 0 })
 
   useEffect(() => {
     const handle = mountHangout(must(canvas.current, 'hangout canvas'), {
       scene: fallPark(),
       reducedMotion: initialReducedMotion.current,
       announce,
+      room: ROOM_URL,
+      onPresence: setPresence,
     })
     park.current = handle
     return () => {
@@ -44,9 +51,10 @@ function HangoutPage() {
 
       <div className="hangout-stage">
         <canvas ref={canvas} aria-describedby="hangout-help" className="block rounded-xl border border-[var(--border)]" />
-        <p id="hangout-help" className="mt-4 text-[var(--text-secondary)]">
-          Click or tap to play. With a keyboard, focus the park, use the arrow keys to move (hold Shift to go faster)
-          and press Enter to kick leaves or shake a tree.
+        <p className="mt-4 font-mono text-sm text-accent">{presenceText(presence)}</p>
+        <p id="hangout-help" className="mt-2 text-[var(--text-secondary)]">
+          Everyone else on this page shows up as a colored cursor. Click or tap to play. With a keyboard, focus the
+          park, use the arrow keys to move (hold Shift to go faster) and press Enter to kick leaves or shake a tree.
         </p>
       </div>
     </div>
