@@ -8,10 +8,10 @@ import { applyFrames, type Frame } from './hacker'
 import { isEditableTarget } from './dom'
 import { useCaretPosition } from './useCaretPosition'
 import { useTypingEffect } from './useTypingEffect'
+import { CONTENT_DELAY_MS, GREETING, NAME, NAME_LINE, TITLE } from './intro'
+import { useReveal } from '../Components/useReveal'
 
-const NAME = 'Chelby Sallady'
 const REBOOT_MS = 900
-const CONTENT_DELAY_MS = 4500
 const MAX_ENTRIES = 30
 
 interface Props {
@@ -41,10 +41,10 @@ function Caret() {
 
 /** `headingHidden`: while minimized the window header carries the page's only h1. */
 function Session({ studies, onViewProjects, onOpenStudy, reduced, headingHidden }: Props & { reduced: boolean; headingHidden: boolean }) {
-  const greeting = useTypingEffect('> hello world', 80, 300, reduced)
-  const name = useTypingEffect(NAME, 100, 1500, reduced)
-  const title = useTypingEffect('Full Stack Engineer', 60, 3200, reduced)
-  const [showContent, setShowContent] = useState(reduced)
+  const greeting = useTypingEffect(GREETING, reduced)
+  const name = useTypingEffect(NAME_LINE, reduced)
+  const title = useTypingEffect(TITLE, reduced)
+  const showContent = useReveal(CONTENT_DELAY_MS, reduced)
   const [entries, setEntries] = useState<Entry[]>([])
   const [input, setInput] = useState('')
   const recall = useRef({ past: [] as string[], cursor: -1 })
@@ -56,11 +56,6 @@ function Session({ studies, onViewProjects, onOpenStudy, reduced, headingHidden 
   const { theme, setTheme } = useTheme()
   const announce = useAnnounce()
 
-  useEffect(() => {
-    if (reduced) return setShowContent(true)
-    const timer = window.setTimeout(() => setShowContent(true), CONTENT_DELAY_MS)
-    return () => window.clearTimeout(timer)
-  }, [reduced])
 
   useEffect(() => {
     const onKey = (e: globalThis.KeyboardEvent) => {
@@ -255,9 +250,9 @@ export default function Terminal(props: Props) {
   }
 
   const lights = [
-    { label: 'Close and reboot terminal', tone: 'bg-red-500/80', onClick: close, pressed: undefined },
-    { label: win === 'minimized' ? 'Restore terminal' : 'Minimize terminal', tone: 'bg-yellow-500/80', onClick: toggleMinimized, pressed: win === 'minimized' },
-    { label: expanded ? 'Shrink terminal' : 'Expand terminal', tone: 'bg-green-500/80', onClick: toggleExpanded, pressed: expanded },
+    { label: 'Close and reboot terminal', tone: 'bg-[var(--window-close)]', onClick: close, pressed: undefined },
+    { label: win === 'minimized' ? 'Restore terminal' : 'Minimize terminal', tone: 'bg-[var(--window-minimize)]', onClick: toggleMinimized, pressed: win === 'minimized' },
+    { label: expanded ? 'Shrink terminal' : 'Expand terminal', tone: 'bg-[var(--window-expand)]', onClick: toggleExpanded, pressed: expanded },
   ]
 
   return (

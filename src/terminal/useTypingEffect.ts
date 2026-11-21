@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import type { TypedLine } from './intro'
 
-export function useTypingEffect(text: string, speed: number, startDelay: number, instant: boolean) {
+export function useTypingEffect({ text, speed, startDelay }: TypedLine, instant: boolean) {
   const [count, setCount] = useState(instant ? text.length : 0)
 
   useEffect(() => {
