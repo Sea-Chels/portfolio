@@ -1,22 +1,23 @@
-import { useState } from 'react'
+import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
 import { SendOutlined, CheckCircleOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Tooltip } from 'antd'
+import { useAnnounce } from '../a11y/announce'
+import { COOLDOWN_MS, EMPTY_FIELDS, cooldownEnd, isComplete, isValidEmail, type ContactFields } from './contactRules'
 
 // Get your free access key from https://web3forms.com/
 export const WEB3FORMS_ACCESS_KEY = 'c29a362b-dd97-4d9f-951a-54c64960941e'
 
 const RATE_LIMIT_STORAGE_KEY = 'portfolio-contact-last-sent'
-const RATE_LIMIT_MS = 7 * 24 * 60 * 60 * 1000 // one week
+const SEND_TIMEOUT_MS = 15_000
+
+const FIELD_CLASS =
+  'w-full px-4 py-3 bg-[var(--bg)] border rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-colors'
+const FIELD_OK = 'border-[var(--border)] focus:border-accent'
+const FIELD_INVALID = 'border-[rgb(var(--error-rgb))] focus:border-[rgb(var(--error-rgb))]'
 
 function readStoredCooldown(): number | null {
-  if (typeof window === 'undefined') return null
   try {
-    const raw = window.localStorage.getItem(RATE_LIMIT_STORAGE_KEY)
-    if (!raw) return null
-    const lastSent = parseInt(raw, 10)
-    if (Number.isNaN(lastSent)) return null
-    const cooldownEnd = lastSent + RATE_LIMIT_MS
-    return cooldownEnd > Date.now() ? cooldownEnd : null
+    return cooldownEnd(window.localStorage.getItem(RATE_LIMIT_STORAGE_KEY), Date.now())
   } catch {
     return null
   }
@@ -29,6 +30,17 @@ function formatCooldownDate(timestamp: number): string {
   }).format(new Date(timestamp))
 }
 
+function Field({ id, label, children }: { id: string; label: string; children: ReactNode }) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-mono text-[var(--text-secondary)] mb-2">
+        {label}
+      </label>
+      {children}
+    </div>
+  )
+}
+
 interface ContactFormProps {
   onSuccess?: () => void
   showCancelButton?: boolean
@@ -36,45 +48,31 @@ interface ContactFormProps {
 }
 
 function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactFormProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  })
+  const [formData, setFormData] = useState<ContactFields>(EMPTY_FIELDS)
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [emailTouched, setEmailTouched] = useState(false)
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(readStoredCooldown)
+  const announce = useAnnounce()
 
   const isRateLimited = cooldownUntil !== null && cooldownUntil > Date.now()
+  const emailInvalid = emailTouched && formData.email !== '' && !isValidEmail(formData.email)
+  const isFormComplete = isComplete(formData)
 
-  // Email validation regex
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-
-  const emailIsValid = isValidEmail(formData.email)
-  const isFormComplete =
-    formData.name.trim() !== '' &&
-    formData.email.trim() !== '' &&
-    formData.subject.trim() !== '' &&
-    formData.message.trim() !== '' &&
-    emailIsValid
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }))
   }
 
-  const handleEmailBlur = () => {
-    setEmailTouched(true)
+  const fail = (message: string) => {
+    setStatus('error')
+    setErrorMessage(message)
+    announce(message)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (isRateLimited) return
     setStatus('loading')
@@ -90,13 +88,14 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
           access_key: WEB3FORMS_ACCESS_KEY,
           ...formData,
         }),
+        signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
       })
 
       const data = await response.json()
 
       if (data.success) {
         setStatus('success')
-        setFormData({ name: '', email: '', subject: '', message: '' })
+        setFormData(EMPTY_FIELDS)
         setEmailTouched(false)
         const now = Date.now()
         try {
@@ -105,22 +104,25 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
           // localStorage may be unavailable (private mode, quota); the in-memory
           // cooldown still applies for the rest of the session.
         }
-        setCooldownUntil(now + RATE_LIMIT_MS)
+        setCooldownUntil(now + COOLDOWN_MS)
+        announce('Message sent. Thank you for reaching out.')
         onSuccess?.()
       } else {
-        setStatus('error')
-        setErrorMessage(data.message || 'Something went wrong. Please try again.')
+        fail(data.message || 'Something went wrong. Please try again.')
       }
-    } catch {
-      setStatus('error')
-      setErrorMessage('Failed to send message. Please try again.')
+    } catch (error) {
+      fail(
+        error instanceof DOMException && error.name === 'TimeoutError'
+          ? 'The message service didn’t answer. Please try again in a moment.'
+          : 'Failed to send message. Please try again.',
+      )
     }
   }
 
   if (status === 'success') {
     return (
       <div className="text-center py-8">
-        <CheckCircleOutlined className="text-5xl text-green-500 mb-4" />
+        <CheckCircleOutlined className="text-5xl text-[rgb(var(--ok-rgb))] mb-4" />
         <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
           Message Sent!
         </h3>
@@ -165,14 +167,7 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Name */}
-      <div>
-        <label
-          htmlFor="contact-name"
-          className="block text-sm font-mono text-[var(--text-secondary)] mb-2"
-        >
-          Name
-        </label>
+      <Field id="contact-name" label="Name">
         <input
           type="text"
           id="contact-name"
@@ -180,19 +175,12 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
           required
           value={formData.name}
           onChange={handleChange}
-          className="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-accent transition-colors"
+          className={`${FIELD_CLASS} ${FIELD_OK}`}
           placeholder="Your name"
         />
-      </div>
+      </Field>
 
-      {/* Email */}
-      <div>
-        <label
-          htmlFor="contact-email"
-          className="block text-sm font-mono text-[var(--text-secondary)] mb-2"
-        >
-          Email
-        </label>
+      <Field id="contact-email" label="Email">
         <input
           type="email"
           id="contact-email"
@@ -200,29 +188,20 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
           required
           value={formData.email}
           onChange={handleChange}
-          onBlur={handleEmailBlur}
-          className={`w-full px-4 py-3 bg-[var(--bg)] border rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none transition-colors ${
-            emailTouched && formData.email && !emailIsValid
-              ? 'border-red-500 focus:border-red-500'
-              : 'border-[var(--border)] focus:border-accent'
-          }`}
+          onBlur={() => setEmailTouched(true)}
+          aria-invalid={emailInvalid}
+          aria-describedby={emailInvalid ? 'contact-email-error' : undefined}
+          className={`${FIELD_CLASS} ${emailInvalid ? FIELD_INVALID : FIELD_OK}`}
           placeholder="your@email.com"
         />
-        {emailTouched && formData.email && !emailIsValid && (
-          <p className="text-red-500 text-sm mt-1 font-mono">
+        {emailInvalid && (
+          <p id="contact-email-error" className="text-[rgb(var(--error-rgb))] text-sm mt-1 font-mono">
             Please enter a valid email address
           </p>
         )}
-      </div>
+      </Field>
 
-      {/* Subject */}
-      <div>
-        <label
-          htmlFor="contact-subject"
-          className="block text-sm font-mono text-[var(--text-secondary)] mb-2"
-        >
-          Subject
-        </label>
+      <Field id="contact-subject" label="Subject">
         <input
           type="text"
           id="contact-subject"
@@ -230,19 +209,12 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
           required
           value={formData.subject}
           onChange={handleChange}
-          className="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-accent transition-colors"
+          className={`${FIELD_CLASS} ${FIELD_OK}`}
           placeholder="What's this about?"
         />
-      </div>
+      </Field>
 
-      {/* Message */}
-      <div>
-        <label
-          htmlFor="contact-message"
-          className="block text-sm font-mono text-[var(--text-secondary)] mb-2"
-        >
-          Message
-        </label>
+      <Field id="contact-message" label="Message">
         <textarea
           id="contact-message"
           name="message"
@@ -250,19 +222,17 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
           rows={4}
           value={formData.message}
           onChange={handleChange}
-          className="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-accent transition-colors resize-none"
+          className={`${FIELD_CLASS} ${FIELD_OK} resize-none`}
           placeholder="Tell me about your project..."
         />
-      </div>
+      </Field>
 
-      {/* Error Message */}
       {status === 'error' && (
-        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-500 text-sm">
+        <div className="p-3 bg-[rgb(var(--error-rgb)/0.1)] border border-[rgb(var(--error-rgb)/0.3)] rounded-lg text-[rgb(var(--error-rgb))] text-sm">
           {errorMessage}
         </div>
       )}
 
-      {/* Buttons */}
       <div className={`flex gap-3 pt-2 ${showCancelButton ? '' : 'justify-end'}`}>
         {showCancelButton && onCancel && (
           <button
