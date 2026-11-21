@@ -8,8 +8,8 @@ import { must } from '../utils/must'
 import SectionMarker from './SectionMarker'
 import { presenceText } from './hangoutPresence'
 
-/** The shared park, a Cloudflare Durable Object from the hangout repo. Local dev joins the same room. */
-const ROOM_URL = 'wss://hangout.sea-chels-hangout.workers.dev/rooms/fall-park'
+/** The shared park, a Cloudflare Durable Object from the hangout repo. Local dev gets its own room, away from visitors. */
+const ROOM_URL = `wss://hangout.sea-chels-hangout.workers.dev/rooms/${import.meta.env.DEV ? 'fall-park-dev' : 'fall-park'}`
 
 function HangoutPage() {
   const canvas = useRef<HTMLCanvasElement>(null)
