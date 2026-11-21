@@ -5,7 +5,6 @@ import closedloopLogo from '../Media/closedloop-logo.png'
 import zipdrugLogo from '../Media/zipdrug-logo.webp'
 import diyHub from '../Media/diy-hub.jpg'
 import artistPortfolio from '../Media/artist-portfolio.gif'
-import mmConverter from '../Media/vid_milimeterConverter.gif'
 import type { CaseStudy } from './types'
 
 export const caseStudies: CaseStudy[] = [
@@ -285,40 +284,5 @@ export const caseStudies: CaseStudy[] = [
     demoIntro:
       'A router keeps its own history stack and swaps the view in place. Click around, try the back button and the broken link: the page never reloads.',
     Demo: lazy(() => import('./demos/RoutingDemo')),
-  },
-  {
-    id: 'mm-converter',
-    title: 'Millimeter Converter',
-    role: 'Client tool',
-    kind: 'client',
-    image: mmConverter,
-    alt: 'A simple input box that converts inches to millimeters',
-    summary: 'A desktop utility built around one CAD designer’s workflow, packaged as an offline Windows app.',
-    concept: {
-      name: 'Parse what people type',
-      teaser: 'Designers write 3 3/8, not 3.375. The input should understand both.',
-    },
-    challenge:
-      'A CAD designer needed a fast converter that lived next to their other tools instead of buried in a browser tab.',
-    approach: [
-      'Packaged a React app with Electron as a standalone Windows executable that works offline.',
-      'Kept the interface to a single input and a single answer.',
-    ],
-    decisions: [
-      {
-        call: 'Desktop, not a web page',
-        why: 'Electron put the tool beside the designer’s CAD software and made it work offline.',
-      },
-      {
-        call: 'One input, one answer',
-        why: 'For a quick lookup, the fastest interface is one with nothing else on it.',
-      },
-    ],
-    outcome: 'A standalone tool that sits beside the designer’s other apps and works offline.',
-    stack: ['Electron', 'React', 'JavaScript'],
-    links: { website: 'https://sea-chels.github.io/aarons-converter/', github: 'https://github.com/Sea-Chels/aarons-converter' },
-    demoIntro:
-      'The converter idea taken a step further: it reads whole numbers, decimals, fractions and mixed numbers, with or without an inch mark, and rounds to a hundredth of a millimeter.',
-    Demo: lazy(() => import('./demos/ConverterDemo')),
   },
 ]
