@@ -268,7 +268,7 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 px-4 py-3 border border-[var(--border)] text-[var(--text-secondary)] font-mono text-sm uppercase tracking-wider hover:border-accent hover:text-accent transition-all duration-300 rounded-lg"
+            className="btn-ghost flex-1"
           >
             Cancel
           </button>

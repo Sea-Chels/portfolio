@@ -2,47 +2,13 @@ import { useState, useEffect } from 'react'
 import {
   LinkedinOutlined,
   GithubOutlined,
-  FileTextOutlined,
   CodeOutlined,
   MessageOutlined,
 } from '@ant-design/icons'
 import aboutHero from '../Media/about-hero.png'
-import resume from '../Media/CLSallady_Resume.pdf'
 import PhysicsText from './ui/PhysicsText'
 import ContactFormModal from './ContactFormModal'
-
-const allSkills = [
-  'JavaScript',
-  'TypeScript',
-  'Python',
-  'React',
-  'React-Native',
-  'Node.js',
-  'Express',
-  'PostgreSQL',
-  'MongoDB',
-  'GraphQL',
-  'Apollo',
-  'REST-APIs',
-  'AWS',
-  'SSO/SAML',
-  'Sequelize',
-  'Prompt-Engineering',
-  'Figma',
-  'Adobe',
-  'UX/UI',
-  'AI-Workflows',
-  'GitHub-Actions',
-  'SQL',
-  'TDD',
-  'Vite',
-  'AI/ML',
-  'Jest',
-  'Storybook',
-  'Playwright',
-]
-
-const highlightSkills = ['React', 'TypeScript', 'Node.js', 'GraphQL', 'AWS', 'AI-Workflows', 'Prompt-Engineering', 'TDD']
+import { highlightSkills, skills } from '../content/skills'
 
 const socialLinks = [
   {
@@ -59,39 +25,20 @@ const socialLinks = [
 
 function AboutPage() {
   const [isVisible, setIsVisible] = useState(false)
-  const [showResumeModal, setShowResumeModal] = useState(false)
-  const [resumeCode, setResumeCode] = useState('')
-  const [codeError, setCodeError] = useState(false)
   const [showContactForm, setShowContactForm] = useState(false)
-
-  const closeResumeModal = () => {
-    setShowResumeModal(false)
-    setResumeCode('')
-    setCodeError(false)
-  }
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
   }, [])
 
-  const handleResumeSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (resumeCode === '2672') {
-      window.open(resume, '_blank')
-      setShowResumeModal(false)
-      setResumeCode('')
-      setCodeError(false)
-    } else {
-      setCodeError(true)
-    }
-  }
+  const bioText = `Hello, I'm a full-stack engineer who came to code through design. As a lead graphic designer, I learned to think about users, narrative and how a product should feel before deciding how to build it.
 
-  const bioText = `Hello, I'm a full-stack software engineer who came to code through design. Before engineering, I worked as a lead graphic designer, where I learned to think about users, narrative, and how a product should feel before deciding how to build it.
+Today I'm a product engineer at NEWITY, where I own features end to end, from talking to users to shipping. I built the company's design system and its role-based access control, and I lead my own R&D, including AI research in Python.
 
-These days, I ship across the stack on consumer products and healthcare-grade platforms, architecting backend services, building React frontends, and owning end-to-end feature delivery. Recent work has leaned heavily on AI-assisted development: custom Claude Code plugins, GitHub Actions automation, and AI-augmented PR review, alongside foundational engineering work like feature flags, schema design, and codebase migrations.
+Before that, I worked on healthcare and consumer products: a multi-agent AI health coach at ClosedLoop, a bilingual call center for pharmacy care teams at Zipdrug, and end-to-end encrypted messaging at Sanctuary. On my own time, I build things like a DIY app with hand-modeled, comic-styled 3D scenes.
 
-What carried over from the design days hasn't gone away. I care as much about how a thing feels to use as whether the tests pass.`
+The design background never left. I care as much about how a thing feels to use as whether the tests pass, and I like building systems (design systems, permission models, agent pipelines) that make the next feature easier to build.`
 
   return (
     <div className="min-h-screen py-16">
@@ -103,7 +50,7 @@ What carried over from the design days hasn't gone away. I care as much about ho
       >
         {/* Section Header */}
         <div className="flex items-center gap-4 mb-8">
-          <span className="font-mono text-accent text-base">02</span>
+          <span className="section-num font-mono text-accent text-base">02</span>
           <div className="h-px flex-1 bg-gradient-to-r from-accent/50 to-transparent" />
         </div>
 
@@ -115,7 +62,7 @@ What carried over from the design days hasn't gone away. I care as much about ho
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Illustration */}
           <div className="relative">
-            <div className="relative overflow-hidden rounded-2xl border border-[var(--border)]">
+            <div data-comic-panel className="relative overflow-hidden rounded-2xl border border-[var(--border)]">
               <img
                 src={aboutHero}
                 alt="Illustration of developer with plants and laptop"
@@ -131,23 +78,16 @@ What carried over from the design days hasn't gone away. I care as much about ho
           <div>
             {/* Quick Action Buttons */}
             <div className="flex flex-wrap gap-3 mb-8">
-              <button
-                onClick={() => setShowResumeModal(true)}
-                className="btn-hacker inline-flex items-center gap-2"
-              >
-                <FileTextOutlined />
-                Resume
-              </button>
               <a
                 href="#skills"
-                className="px-5 py-3 border border-[var(--border)] text-[var(--text-secondary)] font-mono text-sm uppercase tracking-wider hover:border-accent hover:text-accent transition-all duration-300 inline-flex items-center gap-2"
+                className="btn-ghost inline-flex items-center gap-2"
               >
                 <CodeOutlined />
                 Skills
               </a>
               <a
                 href="#contact"
-                className="px-5 py-3 border border-[var(--border)] text-[var(--text-secondary)] font-mono text-sm uppercase tracking-wider hover:border-accent hover:text-accent transition-all duration-300 inline-flex items-center gap-2"
+                className="btn-ghost inline-flex items-center gap-2"
               >
                 <MessageOutlined />
                 Contact
@@ -172,7 +112,7 @@ What carried over from the design days hasn't gone away. I care as much about ho
       {/* Skills Section */}
       <section id="skills" className="mb-20 pt-8">
         <div className="flex items-center gap-4 mb-8">
-          <span className="font-mono text-accent text-base">03</span>
+          <span className="section-num font-mono text-accent text-base">03</span>
           <div className="h-px flex-1 bg-gradient-to-r from-accent/50 to-transparent" />
         </div>
 
@@ -180,13 +120,13 @@ What carried over from the design days hasn't gone away. I care as much about ho
           Skills & Technologies
         </h2>
         <p className="text-lg text-[var(--text-muted)] mb-8 max-w-2xl">
-          A toolkit built through years of design and development experience.
+          The tools behind the case studies, from AI agents and real-time APIs to 3D and design systems.
         </p>
 
         {/* Physics Text Skills */}
-        <div className="relative h-[400px] border border-[var(--border)] rounded-xl bg-[var(--surface)] overflow-hidden group">
+        <div data-comic-panel className="relative h-[400px] border border-[var(--border)] rounded-xl bg-[var(--surface)] overflow-hidden group">
           <PhysicsText
-            text={allSkills.join(' ')}
+            text={skills.join(' ')}
             highlightWords={highlightSkills}
             highlightClass="text-accent"
             backgroundColor="transparent"
@@ -208,7 +148,7 @@ What carried over from the design days hasn't gone away. I care as much about ho
       {/* Contact Section */}
       <section id="contact" className="pt-8">
         <div className="flex items-center gap-4 mb-8">
-          <span className="font-mono text-accent text-base">04</span>
+          <span className="section-num font-mono text-accent text-base">04</span>
           <div className="h-px flex-1 bg-gradient-to-r from-accent/50 to-transparent" />
         </div>
 
@@ -216,13 +156,9 @@ What carried over from the design days hasn't gone away. I care as much about ho
           Get In Touch
         </h2>
         <p className="text-lg text-[var(--text-secondary)] mb-8 max-w-2xl leading-relaxed">
-          Ready to bring your project to life? Whether you're looking to build a
-          web application from scratch, optimize an existing system, or anything
-          in between, I'm here to help.
-        </p>
-
-        <p className="text-xl text-accent font-bold mb-8">
-          Let's turn your vision into code!
+          I'm always happy to hear from people building thoughtful products, especially in AI, healthcare or
+          design systems. Whether it's a project, an idea you want a second opinion on, or just talking shop, the
+          form below is the best way to reach me.
         </p>
 
         {/* Social Links */}
@@ -233,28 +169,19 @@ What carried over from the design days hasn't gone away. I care as much about ho
               href={social.href}
               target="_blank"
               rel="noreferrer"
-              className="group flex items-center gap-3 px-6 py-4 border border-[var(--border)] rounded-lg hover:border-accent hover:bg-accent/5 transition-all duration-300"
+              className="btn-ghost inline-flex items-center gap-2"
             >
-              <social.icon className="text-2xl text-accent" />
-              <span className="text-[var(--text-secondary)] group-hover:text-accent transition-colors">
-                {social.label}
-              </span>
+              <social.icon />
+              {social.label}
             </a>
           ))}
         </div>
 
         {/* Contact Modal Trigger */}
-        <div className="max-w-lg">
-          <button
-            onClick={() => setShowContactForm(true)}
-            className="w-full flex items-center gap-3 px-6 py-4 border border-[var(--border)] rounded-lg hover:border-accent transition-all duration-300 group"
-          >
-            <MessageOutlined className="text-xl text-accent" />
-            <span className="text-[var(--text-secondary)] group-hover:text-accent transition-colors font-mono">
-              Send me a message
-            </span>
-          </button>
-        </div>
+        <button type="button" onClick={() => setShowContactForm(true)} className="btn-hacker inline-flex items-center gap-2">
+          <MessageOutlined />
+          Send me a message
+        </button>
       </section>
 
       {/* Contact Modal */}
@@ -263,69 +190,6 @@ What carried over from the design days hasn't gone away. I care as much about ho
         onClose={() => setShowContactForm(false)}
       />
 
-      {/* Resume Code Modal */}
-      {showResumeModal && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={closeResumeModal}
-        >
-          <div
-            className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 max-w-md w-full"
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <FileTextOutlined className="text-accent text-xl" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-[var(--text-primary)]">
-                  Access Resume
-                </h3>
-                <p className="text-sm text-[var(--text-muted)]">
-                  Enter the access code to view
-                </p>
-              </div>
-            </div>
-
-            <form onSubmit={handleResumeSubmit}>
-              <div className="mb-4">
-                <input
-                  type="text"
-                  value={resumeCode}
-                  onChange={(e) => {
-                    setResumeCode(e.target.value)
-                    setCodeError(false)
-                  }}
-                  placeholder="Enter code"
-                  autoFocus
-                  className={`w-full px-4 py-3 bg-[var(--bg)] border rounded-lg font-mono text-center text-lg tracking-widest text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-accent transition-colors ${
-                    codeError ? 'border-red-500' : 'border-[var(--border)]'
-                  }`}
-                />
-                {codeError && (
-                  <p className="text-red-500 text-sm mt-2 font-mono">
-                    Invalid code. Try again.
-                  </p>
-                )}
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={closeResumeModal}
-                  className="flex-1 px-4 py-3 border border-[var(--border)] text-[var(--text-secondary)] font-mono text-sm uppercase tracking-wider hover:border-accent hover:text-accent transition-all duration-300 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="flex-1 btn-hacker">
-                  Submit
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -15,7 +15,7 @@ function ContactFormModal({ isOpen, onClose }: ContactFormModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-[var(--surface)] border border-[var(--border)] rounded-xl w-full max-w-lg overflow-hidden"
+        data-comic-panel className="bg-[var(--surface)] border border-[var(--border)] rounded-xl w-full max-w-lg overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
       >
