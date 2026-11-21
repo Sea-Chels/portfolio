@@ -1,0 +1,136 @@
+/* Comic mode for individual pages and pop-ups; the shared recipes live in Comic.css. */
+
+/* Case-study cards: comic panels in a loose strip. */
+.comic .cs-card {
+  border: var(--comic-panel-stroke) solid var(--ink);
+  border-radius: 0.375rem;
+  background: radial-gradient(circle, rgb(var(--comic-paper-rgb) / 0.05) 1.3px, transparent 1.7px) 0 0 / 9px 9px, var(--surface);
+  box-shadow: var(--comic-shadow);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+}
+.comic .grid > :nth-child(3n + 1) .cs-card { rotate: -1deg; }
+.comic .grid > :nth-child(3n + 2) .cs-card { rotate: 0.8deg; }
+.comic .grid > :nth-child(3n) .cs-card { rotate: -0.5deg; }
+.comic .cs-card:hover {
+  transform: translate(-3px, -3px) rotate(-0.4deg);
+  box-shadow: calc(var(--comic-offset) * 3) calc(var(--comic-offset) * 3) 0 var(--ink);
+}
+.comic .cs-card-art {
+  border-bottom: var(--comic-panel-stroke) solid var(--ink);
+}
+.comic .cs-card-art::after {
+  content: '' / '';
+  position: absolute;
+  inset: 0;
+  background: var(--comic-halftone);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.comic .cs-card .cs-card-open {
+  font-family: var(--comic-font);
+  font-size: 1.7rem;
+  letter-spacing: 0.05em;
+}
+/* The concept box becomes a yellow caption. */
+.comic .cs-card .cs-panel {
+  background: var(--comic-halftone), var(--pop);
+  border: var(--comic-stroke) solid var(--ink);
+  box-shadow: var(--comic-shadow-sm);
+  transform: rotate(-1deg);
+}
+.comic .cs-card .cs-panel :is(p, span) {
+  color: var(--ink) !important;
+}
+.comic .cs-card .cs-panel .text-accent {
+  font-family: var(--comic-font);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+/* Contact form inside its comic panel */
+.comic [data-comic-panel] form :is(input, textarea):not(.terminal-input) {
+  border: var(--comic-stroke) solid var(--ink);
+  border-radius: 0.5rem;
+}
+.comic [data-comic-panel] form label {
+  font-family: var(--comic-font);
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+}
+
+/* Art: each piece is a framed panel, hung a little crooked. */
+.comic .art-frame {
+  border: var(--comic-panel-stroke) solid rgb(var(--comic-paper-rgb));
+  outline: var(--comic-stroke) solid var(--ink);
+  border-radius: 0.25rem;
+  box-shadow: calc(var(--comic-offset) * 2 + var(--comic-stroke)) calc(var(--comic-offset) * 2 + var(--comic-stroke)) 0 var(--ink);
+}
+.comic .art-grid > :nth-child(4n + 1) .art-frame { rotate: -1.2deg; }
+.comic .art-grid > :nth-child(4n + 2) .art-frame { rotate: 0.9deg; }
+.comic .art-grid > :nth-child(4n + 3) .art-frame { rotate: -0.5deg; }
+.comic .art-grid > :nth-child(4n) .art-frame { rotate: 1.4deg; }
+.comic .art-view {
+  padding: 0.35rem 0.9rem;
+  font-family: var(--comic-font);
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  background: var(--pop);
+  border: var(--comic-stroke) solid var(--ink);
+  box-shadow: var(--comic-shadow-sm);
+  rotate: -3deg;
+}
+.comic .art-lightbox-img {
+  border: 0.6rem solid rgb(var(--comic-paper-rgb));
+  outline: var(--comic-panel-stroke) solid var(--ink);
+  border-radius: 0.25rem;
+  box-shadow: calc(var(--comic-offset) * 4) calc(var(--comic-offset) * 4) 0 var(--ink);
+}
+.comic .art-counter {
+  font-family: var(--comic-font);
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  background: var(--pop);
+  border: var(--comic-stroke) solid var(--ink);
+  border-radius: 0.25rem;
+  box-shadow: var(--comic-shadow-sm);
+}
+
+/* Floating controls: yellow discs with an ink ring, legible over light art and dark backdrops alike. */
+.comic :is(.overlay-control, .project-modal .ant-modal-close) {
+  color: var(--ink);
+  background: var(--pop);
+  border: var(--comic-stroke) solid var(--ink);
+  box-shadow: var(--comic-shadow-sm);
+}
+.comic :is(.overlay-control, .project-modal .ant-modal-close):hover {
+  color: var(--ink);
+  background: rgb(var(--comic-pink-rgb));
+}
+
+/* 404: the dug-up code reads as a sticker slapped on the log. */
+.comic .not-found-secret {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  font-family: var(--comic-font);
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  background: var(--pop);
+  border: var(--comic-stroke) solid var(--ink);
+  box-shadow: var(--comic-shadow-sm);
+  transform: rotate(-2deg);
+}
+
+/* Case-study pop-ups */
+.comic .ant-modal-content {
+  border: var(--comic-panel-stroke) solid var(--ink);
+  border-radius: 0.5rem !important;
+  box-shadow: calc(var(--comic-offset) * 4) calc(var(--comic-offset) * 4) 0 var(--ink) !important;
+}
+.comic .ant-modal-content .cs-panel,
+.comic .ant-modal-content .cs-status {
+  border-color: var(--ink);
+}

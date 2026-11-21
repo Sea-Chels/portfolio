@@ -62,6 +62,27 @@
   --text-primary: #f4f4f5;
   --text-secondary: #d4d4d8;
   --text-muted: #a1a1aa;
+  --accent-rgb: 255 122 100;
+  --ok-rgb: 74 222 128;
+  --warn-rgb: 250 204 21;
+  --error-rgb: 248 113 113;
+  --focus-ring: 2px solid rgb(var(--accent-rgb));
+  /* Comic mode's palette, from the DIY app's: ink, pop colors and the starburst. */
+  /* Backing for controls that float over images, so they stay legible on any artwork. */
+  --scrim-rgb: 10 10 10;
+  --comic-ink-rgb: 22 17 31;
+  --comic-yellow-rgb: 255 210 63;
+  --comic-pink-rgb: 255 79 216;
+  --comic-cyan-rgb: 110 231 255;
+  --comic-purple-rgb: 123 63 228;
+  --comic-sky-rgb: 29 155 240;
+  --comic-paper-rgb: 255 255 255;
+  --comic-font: 'Bangers', 'Impact', sans-serif;
+  --comic-stroke: 3px;
+  --comic-panel-stroke: 4px;
+  --comic-caret-width: 3px;
+  --comic-offset: 0.3rem;
+  --comic-burst-shape: polygon(50% 0%, 58% 18%, 75% 6%, 74% 26%, 96% 20%, 84% 38%, 100% 50%, 84% 62%, 96% 80%, 74% 74%, 75% 94%, 58% 82%, 50% 100%, 42% 82%, 25% 94%, 26% 74%, 4% 80%, 16% 62%, 0% 50%, 16% 38%, 4% 20%, 26% 26%, 25% 6%, 42% 18%);
 }
 
 .light {
@@ -72,6 +93,19 @@
   --text-primary: #18181b;
   --text-secondary: #3f3f46;
   --text-muted: #71717a;
+  --ok-rgb: 22 163 74;
+  --warn-rgb: 161 98 7;
+  --error-rgb: 220 38 38;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* The blinking caret is the terminal prompt's focus cue. */
+.terminal-input:focus-visible {
+  outline: none;
 }
 
 html {
@@ -93,17 +127,34 @@ body {
 }
 
 /* Component classes */
-.btn-hacker {
+/* Primary (.btn-hacker) and secondary (.btn-ghost) buttons share one shape. */
+.btn-hacker,
+.btn-ghost {
   padding: 0.75rem 1.5rem;
   background-color: transparent;
-  border: 1px solid #FF7A64;
-  color: #FF7A64;
+  border: 1px solid rgb(var(--accent-rgb));
+  color: rgb(var(--accent-rgb));
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: all 0.3s ease-out;
   cursor: pointer;
+}
+
+/* Compact size for buttons inside cards and demos. */
+.btn-sm {
+  padding-block: 0.5rem;
+}
+
+.btn-ghost {
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  border-color: rgb(var(--accent-rgb));
+  color: rgb(var(--accent-rgb));
 }
 
 .btn-hacker:hover {
@@ -149,4 +200,41 @@ body {
 /* Glow effect */
 .glow-accent {
   box-shadow: 0 0 20px rgba(255, 122, 100, 0.3);
+}
+
+/* Comic mode draws its own, thicker caret (CSS can't set a caret's width), so it's inert outside it. */
+.terminal-caret {
+  display: none;
+}
+
+/* Controls floating over artwork or photos: a dark disc and light ring read on any background. */
+.overlay-control,
+.project-modal .ant-modal-close {
+  display: grid;
+  place-items: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: 9999px;
+  font-size: 1rem;
+  color: #fff;
+  background: rgb(var(--scrim-rgb) / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.45);
+  box-shadow: 0 2px 10px rgb(var(--scrim-rgb) / 0.4);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.overlay-control:hover,
+.project-modal .ant-modal-close:hover {
+  color: #fff;
+  background: rgb(var(--scrim-rgb) / 0.9);
+  transform: scale(1.06);
+}
+.project-modal .ant-modal-close {
+  top: 0.75rem;
+  right: 0.75rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .overlay-control:hover,
+  .project-modal .ant-modal-close:hover {
+    transform: none;
+  }
 }
