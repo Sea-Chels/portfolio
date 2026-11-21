@@ -11,6 +11,8 @@ import { presenceText } from './hangoutPresence'
 /** The shared park, a Cloudflare Durable Object from the hangout repo. Local dev gets its own room, away from visitors. */
 const ROOM_URL = `wss://hangout.sea-chels-hangout.workers.dev/rooms/${import.meta.env.DEV ? 'fall-park-dev' : 'fall-park'}`
 
+const PARK = fallPark()
+
 function HangoutPage() {
   const canvas = useRef<HTMLCanvasElement>(null)
   const park = useRef<HangoutHandle | null>(null)
@@ -18,14 +20,16 @@ function HangoutPage() {
   const reducedMotion = useReducedMotion()
   const initialReducedMotion = useRef(reducedMotion)
   const [presence, setPresence] = useState<Presence>({ status: 'connecting', others: 0 })
+  const [held, setHeld] = useState<string | null>(null)
 
   useEffect(() => {
     const handle = mountHangout(must(canvas.current, 'hangout canvas'), {
-      scene: fallPark(),
+      scene: PARK,
       reducedMotion: initialReducedMotion.current,
       announce,
       room: ROOM_URL,
       onPresence: setPresence,
+      onHeld: setHeld,
     })
     park.current = handle
     return () => {
@@ -44,17 +48,25 @@ function HangoutPage() {
         <SectionMarker num="06" />
         <h1 className="text-5xl md:text-6xl font-bold text-[var(--text-primary)] mb-4">Hangout</h1>
         <p className="text-lg text-[var(--text-muted)] max-w-2xl">
-          A little park for your cursor to hang out in. Kick the leaf piles, shake a tree, and keep an eye out for the
-          neighborhood dog.
+          A little park for your cursor to hang out in. Kick the leaf piles, shake a tree, and grab a toy from the
+          picnic basket: play fetch with the park dog, feed the ducks, fly a kite or blow bubbles.
         </p>
       </motion.section>
 
       <div className="hangout-stage">
         <canvas ref={canvas} aria-describedby="hangout-help" className="block rounded-xl border border-[var(--border)]" />
-        <p className="mt-4 font-mono text-sm text-accent">{presenceText(presence)}</p>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="font-mono text-sm text-accent">{presenceText(presence)}</p>
+          {held && (
+            <button type="button" className="btn-ghost btn-sm" onClick={() => park.current?.drop()}>
+              Put down {PARK.itemName(held)}
+            </button>
+          )}
+        </div>
         <p id="hangout-help" className="mt-2 text-[var(--text-secondary)]">
           Everyone else on this page shows up as a colored cursor. Click or tap to play. With a keyboard, focus the
-          park, use the arrow keys to move (hold Shift to go faster) and press Enter to kick leaves or shake a tree.
+          park, use the arrow keys to move (hold Shift to go faster) and press Enter to kick leaves, shake a tree or open
+          the picnic basket. Press Escape to put a toy down.
         </p>
       </div>
     </div>
