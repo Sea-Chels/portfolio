@@ -123,7 +123,7 @@ The design background never left. I care as much about how a thing feels to use 
             highlightWords={highlightSkills}
             highlightClass="text-accent"
             mouseConstraintStiffness={0.3}
-            fontSize="1.5rem"
+            fontSize="var(--skills-word-size)"
             fontFamily="var(--font-mono)"
           />
         </div>

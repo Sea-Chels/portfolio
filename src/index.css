@@ -48,6 +48,8 @@
   --comic-paper-rgb: 255 255 255;
   --comic-font: 'Bangers', 'Impact', sans-serif;
   /* Bangers' type scale and tracking: comic lettering comes in a few clearly different sizes. */
+  /* The skills box is a fixed 400px tall, so the word cloud shrinks with the width to fit. */
+  --skills-word-size: var(--text-sm);
   --comic-text-sm: 1.05rem;
   --comic-text-md: 1.25rem;
   --comic-text-lg: 1.45rem;
@@ -216,5 +218,17 @@ body,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --skills-word-size: var(--text-lg);
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --skills-word-size: var(--text-2xl);
   }
 }
