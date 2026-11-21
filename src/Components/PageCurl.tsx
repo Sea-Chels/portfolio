@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import {
   PAGE_CURL_MS,
   curlBounds,
@@ -14,7 +14,8 @@ import {
 
 /** The outgoing page as it looked on screen, captured before the next piece replaces it. */
 export interface CurlPage {
-  src: string
+  /** The on-screen image itself: it's already decoded, so the first frame can be drawn right away. */
+  image: HTMLImageElement
   /** The page's outer box (its frame included), in viewport px. */
   left: number
   top: number
@@ -33,7 +34,7 @@ export function capturePage(img: HTMLImageElement): CurlPage {
   const rect = img.getBoundingClientRect()
   const outline = style.outlineStyle === 'none' ? 0 : parseFloat(style.outlineWidth) || 0
   return {
-    src: img.currentSrc || img.src,
+    image: img,
     left: rect.left - outline,
     top: rect.top - outline,
     width: rect.width + 2 * outline,
@@ -69,7 +70,8 @@ export default function PageCurl({ page, direction, onDone }: Props) {
   const { width: w, height: h } = page
   const bounds = curlBounds(w, h, direction)
 
-  useEffect(() => {
+  // A layout effect, so the first frame is on the canvas in the same paint that hides the page.
+  useLayoutEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return done.current()
@@ -81,8 +83,7 @@ export default function PageCurl({ page, direction, onDone }: Props) {
     const mirror = turnFrame(direction, w)
     const inTurn = multiply(toCanvas, mirror)
 
-    const image = new Image()
-    image.src = page.src
+    const { image } = page
     let frame = 0
     let cancelled = false
     let start = 0
@@ -117,7 +118,8 @@ export default function PageCurl({ page, direction, onDone }: Props) {
     const draw = (now: number) => {
       if (cancelled) return
       if (!start) start = now
-      const t = Math.min((now - start) / PAGE_CURL_MS, 1)
+      // The first frame is drawn on performance.now(); a frame's timestamp is when it began, so it can be earlier.
+      const t = Math.min(Math.max((now - start) / PAGE_CURL_MS, 0), 1)
       const curl = curlFrame(easeInOut(t), w, h)
 
       ctx.setTransform(1, 0, 0, 1, 0, 0)
@@ -185,12 +187,12 @@ export default function PageCurl({ page, direction, onDone }: Props) {
       else done.current()
     }
 
-    image
-      .decode()
-      .then(() => {
-        if (!cancelled) frame = requestAnimationFrame(draw)
-      })
-      .catch(() => done.current())
+    if (image.complete && image.naturalWidth) draw(performance.now())
+    else
+      image
+        .decode()
+        .then(() => draw(performance.now()))
+        .catch(() => done.current())
 
     return () => {
       cancelled = true

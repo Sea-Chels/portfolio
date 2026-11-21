@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type KeyboardEvent as ReactKeyboardEvent } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { artworks } from '../Media'
 import { CloseOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
@@ -67,6 +67,8 @@ function ArtPage() {
     }
     const to = (selectedIndex + direction + artworks.length) % artworks.length
     if (flips && pageRef.current) {
+      // Fetched while the page turns, so the next piece is ready the moment it's revealed.
+      new Image().src = artworks[to].path
       setCurl({ id: nextCurlId.current++, page: capturePage(pageRef.current), direction, to })
     } else {
       setSelectedIndex(to)
@@ -102,8 +104,9 @@ function ArtPage() {
   }, [curl])
 
   // One persistent page element whose source changes: remounting a keyed <img> per piece left the
-  // old elements behind in the DOM after each turn, stacking up beside the new one.
-  useEffect(() => {
+  // old elements behind in the DOM after each turn, stacking up beside the new one. A layout effect,
+  // so the fade starts before the new piece is first painted at full opacity.
+  useLayoutEffect(() => {
     if (!flips || selectedIndex === null) return
     const entrance = pageRef.current?.animate(PAGE_ENTER, { duration: PAGE_ENTER_MS, easing: 'ease-out' })
     return () => entrance?.cancel()
