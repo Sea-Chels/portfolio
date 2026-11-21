@@ -1,8 +1,7 @@
 import * as THREE from 'three'
+import { cssChannels, toHex } from '../../../utils/palette'
 
 /** Ported from the DIY repo's shared/toon.ts, trimmed to the layers the demo can switch. */
-
-export const INK = 0x16111f
 
 export interface Finish {
   shine?: number
@@ -118,7 +117,7 @@ export function comic(color: THREE.ColorRepresentation, finish: Finish, shared: 
 export function inkMaterial(width: number): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
     side: THREE.BackSide,
-    uniforms: { uWidth: { value: width }, uColor: { value: new THREE.Color(INK) } },
+    uniforms: { uWidth: { value: width }, uColor: { value: new THREE.Color(toHex(cssChannels('--comic-ink-rgb'))) } },
     vertexShader: /* glsl */ `
       uniform float uWidth;
       void main() {

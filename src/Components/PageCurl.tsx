@@ -50,6 +50,10 @@ const CAST_SHADOW_PX = 48
 const SHOW_THROUGH = 0.12
 const FADE_FROM = 0.85
 
+/** Paper is lit like a real page: it darkens into folds and shadows and catches a pale sheen where it bends. */
+const shadow = (alpha: number) => `rgb(0 0 0 / ${alpha})`
+const sheen = (alpha: number) => `rgb(255 255 255 / ${alpha})`
+
 interface Props {
   page: CurlPage
   direction: TurnDirection
@@ -134,7 +138,7 @@ export default function PageCurl({ page, direction, onDone }: Props) {
         set(toCanvas)
         drawPage()
         set(inTurn)
-        shadeFromFold(fold, away, FOLD_SHADE_PX, [[0, 'rgba(0,0,0,0.22)'], [1, 'rgba(0,0,0,0)']])
+        shadeFromFold(fold, away, FOLD_SHADE_PX, [[0, shadow(0.22)], [1, shadow(0)]])
         ctx.restore()
 
         // The flap's shadow on the next page, which shows through where the page has lifted.
@@ -142,7 +146,7 @@ export default function PageCurl({ page, direction, onDone }: Props) {
         set(inTurn)
         trace(lifted)
         ctx.clip()
-        shadeFromFold(fold, fold.normal, CAST_SHADOW_PX, [[0, 'rgba(0,0,0,0.4)'], [1, 'rgba(0,0,0,0)']])
+        shadeFromFold(fold, fold.normal, CAST_SHADOW_PX, [[0, shadow(0.4)], [1, shadow(0)]])
         ctx.restore()
 
         // The flap: the lifted part folded over, showing the back of the paper.
@@ -152,7 +156,7 @@ export default function PageCurl({ page, direction, onDone }: Props) {
         ctx.globalAlpha = flapAlpha
         set(folded)
         trace(lifted)
-        ctx.shadowColor = 'rgba(0,0,0,0.35)'
+        ctx.shadowColor = shadow(0.35)
         ctx.shadowBlur = 18 * dpr
         ctx.fillStyle = page.paper
         ctx.fill()
@@ -165,10 +169,10 @@ export default function PageCurl({ page, direction, onDone }: Props) {
         ctx.globalAlpha = flapAlpha
         set(folded)
         shadeFromFold(fold, fold.normal, Math.hypot(w, h) / 2, [
-          [0, 'rgba(0,0,0,0.25)'],
-          [0.15, 'rgba(255,255,255,0)'],
-          [0.45, 'rgba(255,255,255,0.18)'],
-          [1, 'rgba(0,0,0,0.12)'],
+          [0, shadow(0.25)],
+          [0.15, sheen(0)],
+          [0.45, sheen(0.18)],
+          [1, shadow(0.12)],
         ])
         trace(lifted)
         ctx.strokeStyle = page.ink

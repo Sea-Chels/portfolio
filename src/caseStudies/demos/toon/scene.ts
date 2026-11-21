@@ -2,11 +2,12 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import { arcLift, createTweens, easeOutBack } from '../../logic/motion'
+import { cssChannels, toHex } from '../../../utils/palette'
 import { ALL_LAYERS, comic, createGradient, inkMaterial, type Comic, type Layers, type SharedUniforms } from './material'
 
-/** Colors from the DIY palette, so the demo reads as the same world. */
-const COLOR = { coral: 0xf2694c, cyan: 0x6ee7ff, yellow: 0xffd23f, steel: 0xc4cad6, ground: 0x1d2133, charcoal: 0x23262e }
-const LIGHT = { key: 0xfff0dc, sky: 0xc9d2ff, ground: 0x2a1830, rimPink: 0xff4fd8 }
+/** Colors from the DIY palette, so the demo reads as the same world; the comic pops come from the site's tokens. */
+const COLOR = { coral: 0xf2694c, steel: 0xc4cad6, ground: 0x1d2133, charcoal: 0x23262e }
+const LIGHT = { key: 0xfff0dc, sky: 0xc9d2ff, ground: 0x2a1830 }
 
 export type ViewName = 'overview' | 'closeup'
 const VIEWS: Record<ViewName, { pos: THREE.Vector3; target: THREE.Vector3 }> = {
@@ -116,7 +117,7 @@ export function createToonScene(container: HTMLElement, canvasAttrs: Record<stri
   const ball = part(new THREE.SphereGeometry(0.42, 48, 32), COLOR.steel, chrome)
   ball.position.set(1.45, 0.42, 0.65)
 
-  const gear = part(new THREE.TorusGeometry(0.36, 0.13, 20, 48), COLOR.cyan, { shine: 0.6, halftone: 1 })
+  const gear = part(new THREE.TorusGeometry(0.36, 0.13, 20, 48), toHex(cssChannels('--comic-cyan-rgb')), { shine: 0.6, halftone: 1 })
   gear.position.set(1.15, 0.13, -0.85)
   gear.rotation.x = -Math.PI / 2
 
@@ -128,7 +129,7 @@ export function createToonScene(container: HTMLElement, canvasAttrs: Record<stri
   Object.assign(key.shadow.camera, { left: -4, right: 4, top: 4, bottom: -4 })
   key.shadow.camera.updateProjectionMatrix()
   scene.add(key)
-  const rim = new THREE.DirectionalLight(LIGHT.rimPink, 1.2)
+  const rim = new THREE.DirectionalLight(toHex(cssChannels('--comic-pink-rgb')), 1.2)
   rim.position.set(-4, 2, -5)
   scene.add(rim)
 
