@@ -1,12 +1,14 @@
-import { lazy, useState } from 'react'
+import { lazy, useRef, useState } from 'react'
 import {
   LinkedinOutlined,
   GithubOutlined,
   CodeOutlined,
   MessageOutlined,
+  ThunderboltOutlined,
 } from '@ant-design/icons'
 import aboutHero from '../Media/about-hero.png'
-import PhysicsText from './ui/PhysicsText'
+import PhysicsText, { type PhysicsTextHandle } from './ui/PhysicsText'
+import { useAnnounce } from '../a11y/announce'
 import MountOnceOpened from './MountOnceOpened'
 import { highlightSkills, skills } from '../content/skills'
 import SectionMarker from './SectionMarker'
@@ -30,6 +32,13 @@ const socialLinks = [
 function AboutPage() {
   const isVisible = useReveal(PAGE_SETTLE_MS)
   const [showContactForm, setShowContactForm] = useState(false)
+  const skillsToy = useRef<PhysicsTextHandle>(null)
+  const announce = useAnnounce()
+
+  const scatterSkills = () => {
+    skillsToy.current?.scatter()
+    announce('Skills scattered')
+  }
 
   const bioText = `Hello, I'm a full-stack engineer who came to code through design. As a lead graphic designer, I learned to think about users, narrative and how a product should feel before deciding how to build it.
 
@@ -107,8 +116,9 @@ The design background never left. I care as much about how a thing feels to use 
           The tools behind the case studies, from AI agents and real-time APIs to 3D and design systems.
         </p>
 
-        <div data-comic-panel className="relative h-[400px] border border-[var(--border)] rounded-xl bg-[var(--surface)] overflow-hidden group">
+        <div data-comic-panel className="relative h-[400px] border border-[var(--border)] rounded-xl bg-[var(--surface)] overflow-hidden">
           <PhysicsText
+            ref={skillsToy}
             text={skills.join(' ')}
             highlightWords={highlightSkills}
             highlightClass="text-accent"
@@ -116,12 +126,23 @@ The design background never left. I care as much about how a thing feels to use 
             fontSize="1.5rem"
             fontFamily="var(--font-mono)"
           />
-          <div className="absolute bottom-4 right-4 flex items-center gap-2 text-[var(--text-muted)] text-sm font-mono opacity-60 group-hover:opacity-0 transition-opacity duration-300 pointer-events-none">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <p id="skills-hint" className="flex items-center gap-2 text-sm font-mono text-[var(--text-secondary)]">
+            <svg aria-hidden className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
             </svg>
-            <span>drag to play</span>
-          </div>
+            Drag the words to toss them around, or scatter them all at once.
+          </p>
+          <button
+            type="button"
+            onClick={scatterSkills}
+            aria-describedby="skills-hint"
+            className="btn-ghost btn-sm inline-flex items-center gap-2"
+          >
+            <ThunderboltOutlined aria-hidden />
+            Scatter
+          </button>
         </div>
       </section>
 

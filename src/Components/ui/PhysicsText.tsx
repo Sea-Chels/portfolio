@@ -1,6 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react'
 import Matter from 'matter-js'
 import { isSettled } from './physicsRest'
+import { scatterKicks } from './scatter'
+
+/** Lets a button outside the canvas toss the words, so the toy works without a pointer. */
+export interface PhysicsTextHandle {
+  scatter(): void
+}
 
 interface PhysicsTextProps {
   text?: string
@@ -10,6 +16,7 @@ interface PhysicsTextProps {
   mouseConstraintStiffness?: number
   fontSize?: string
   fontFamily?: string
+  ref?: Ref<PhysicsTextHandle>
 }
 
 interface Placement {
@@ -24,6 +31,8 @@ interface WheelBlockingMouse {
 }
 
 const WALL_THICKNESS = 60
+/** A wake always runs this many frames, so the solver has stepped before anything is judged at rest. */
+const MIN_AWAKE_FRAMES = 10
 /** How far inside the edges words are pushed back when the box shrinks. */
 const EDGE_PADDING = 20
 
@@ -35,12 +44,16 @@ export default function PhysicsText({
   mouseConstraintStiffness = 0.2,
   fontSize = '2rem',
   fontFamily = 'inherit',
+  ref,
 }: PhysicsTextProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const layoutRef = useRef<HTMLDivElement>(null)
   const [positions, setPositions] = useState<Placement[]>([])
   const [isReady, setIsReady] = useState(false)
+  const scatterRef = useRef<() => void>(() => {})
+
+  useImperativeHandle(ref, () => ({ scatter: () => scatterRef.current() }), [])
 
   const words = text.split(' ')
 
@@ -101,14 +114,16 @@ export default function PhysicsText({
     })
     World.add(engine.world, grab)
 
-    // The simulation only runs while something moves: a grab wakes it, and it sleeps once every word
-    // has settled and been let go.
+    // The simulation only runs while something moves: a grab, a scatter or a resize wakes it, and it
+    // sleeps once every word has settled and been let go.
     const runner = Runner.create()
     let frame = 0
+    let awakeFor = 0
     const tick = () => {
       place()
+      awakeFor += 1
       // The button counts as held from the press itself, before Matter.js has attached the grab.
-      if (isSettled(bodies, mouse.button === 0 || grab.body !== null)) {
+      if (awakeFor >= MIN_AWAKE_FRAMES && isSettled(bodies, mouse.button === 0 || grab.body !== null)) {
         Runner.stop(runner)
         frame = 0
         return
@@ -116,11 +131,20 @@ export default function PhysicsText({
       frame = requestAnimationFrame(tick)
     }
     const wake = () => {
+      awakeFor = 0
       if (frame) return
       Runner.run(runner, engine)
       frame = requestAnimationFrame(tick)
     }
     canvas.addEventListener('pointerdown', wake)
+
+    scatterRef.current = () => {
+      scatterKicks(bodies.length, Math.random).forEach((kick, i) => {
+        Body.setVelocity(bodies[i], { x: kick.x, y: kick.y })
+        Body.setAngularVelocity(bodies[i], kick.spin)
+      })
+      wake()
+    }
 
     const resizeObserver = new ResizeObserver(() => {
       const w = container.offsetWidth
@@ -139,10 +163,13 @@ export default function PhysicsText({
       wake()
     })
     resizeObserver.observe(container)
+    // Words laid out wider than a narrow box start out overlapping; one run pushes them apart.
+    wake()
 
     return () => {
       resizeObserver.disconnect()
       canvas.removeEventListener('pointerdown', wake)
+      scatterRef.current = () => {}
       cancelAnimationFrame(frame)
       Runner.stop(runner)
       World.clear(engine.world, false)
