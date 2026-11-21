@@ -1,6 +1,7 @@
 import { ArrowRightOutlined, ExperimentOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import type { CaseStudy } from './types'
+import '../Css/CaseStudy.css'
 
 /** Freezes a GIF on its first frame until hover, so a grid of them isn't all animating at once. */
 function useFirstFrame(src: string): string | null {
@@ -56,8 +57,8 @@ export default function CaseStudyCard({ study, onOpen }: Props) {
         />
         {isGif && !hovering && frame && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="rounded-full bg-black/60 p-4 backdrop-blur-sm">
-              <PlayCircleOutlined className="text-4xl text-white" aria-hidden />
+            <div className="rounded-full bg-[rgb(var(--scrim-rgb)/0.6)] p-4 backdrop-blur-sm">
+              <PlayCircleOutlined className="text-4xl text-[rgb(var(--overlay-fg-rgb))]" aria-hidden />
             </div>
           </div>
         )}

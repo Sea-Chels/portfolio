@@ -35,7 +35,6 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
       >
         <div className="w-full h-full flex items-center px-4 sm:px-6 md:px-10 lg:px-12">
           <div className="flex-1 flex items-center justify-between">
-          {/* Logo */}
           <a
             href={HOME.path}
             onClick={(e) => followInApp(e, () => navigate(HOME.page))}
@@ -47,7 +46,6 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
             <span className="text-[var(--text-muted)] group-hover:text-accent transition-colors">/&gt;</span>
           </a>
 
-          {/* Navigation Links */}
           <div className="flex items-center gap-1">
             {ROUTES.map((route) => {
               const isActive = currentPage === route.page
@@ -69,7 +67,6 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
               )
             })}
 
-            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="ml-2 sm:ml-4 p-2 rounded-lg border border-[var(--border)] hover:border-accent hover:text-accent transition-all duration-200"

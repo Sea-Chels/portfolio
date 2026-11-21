@@ -68,8 +68,8 @@ export default function ToonDemo() {
 
   return (
     <div className="space-y-4">
-      <div ref={frameRef} className="relative aspect-[16/10] overflow-hidden rounded-lg bg-[radial-gradient(circle_at_50%_40%,#1c2230,#0a0c10)]">
-        <p className="pointer-events-none absolute bottom-2 right-3 font-mono text-xs text-white/50">drag to orbit · scroll to zoom</p>
+      <div ref={frameRef} className="toon-stage relative aspect-[16/10] overflow-hidden rounded-lg">
+        <p className="pointer-events-none absolute bottom-2 right-3 font-mono text-xs text-[rgb(var(--overlay-fg-rgb)/0.5)]">drag to orbit · scroll to zoom</p>
       </div>
 
       <div className="flex flex-wrap gap-3">

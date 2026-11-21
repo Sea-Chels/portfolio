@@ -1,4 +1,3 @@
-// artwork imports------------------------------------------
 import bonnieAndClyde from './personalWork/a_bonnie-and-clyde.png'
 import chillWitch from './personalWork/a_chill-witch.png'
 import frogGiveUp from './personalWork/a_frog-give-up.png'
@@ -33,7 +32,7 @@ export interface Artwork {
 }
 
 export const artworks: Artwork[] = [
-  // --- Column 1 (top): two featured illustrations, then photos ---
+  // Column 1 (top): two featured illustrations, then photos.
   {
     path: bonnieAndClyde,
     alt: 'Bonnie and Clyde illustration',
@@ -70,7 +69,7 @@ export const artworks: Artwork[] = [
     path: photo26,
     alt: 'soon to be project',
   },
-  // --- Column 2 (top): two featured illustrations, then photos ---
+  // Column 2 (top): two featured illustrations, then photos.
   {
     path: witchCat,
     alt: 'Witch cat illustration',
@@ -103,7 +102,7 @@ export const artworks: Artwork[] = [
     path: photo13,
     alt: 'soon to be project',
   },
-  // --- Column 3 (top): two featured illustrations, then photos ---
+  // Column 3 (top): two featured illustrations, then photos.
   {
     path: screamingRaccoon,
     alt: 'Screaming raccoon illustration',

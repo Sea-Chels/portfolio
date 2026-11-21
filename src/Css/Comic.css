@@ -49,7 +49,7 @@ html.comic ::selection {
 .comic :is(h1, h2) {
   font-family: var(--comic-font);
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--comic-track-tight);
   line-height: 0.95;
   color: rgb(var(--comic-paper-rgb));
   -webkit-text-stroke: var(--comic-outline);
@@ -59,7 +59,7 @@ html.comic ::selection {
 .comic h3 {
   font-family: var(--comic-font);
   font-weight: 400;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--comic-track-normal);
 }
 
 /* Section numbers become badges; the hairline beside them becomes an ink rule. */
@@ -70,7 +70,7 @@ html.comic ::selection {
   height: 2.75rem;
   flex-shrink: 0;
   font-family: var(--comic-font);
-  font-size: 1.4rem;
+  font-size: var(--comic-text-lg);
   color: var(--ink);
   background: var(--pop);
   border: var(--comic-stroke) solid var(--ink);
@@ -89,13 +89,13 @@ html.comic ::selection {
 }
 .comic .nav-link {
   font-family: var(--comic-font);
-  font-size: 1.15rem;
-  letter-spacing: 0.08em;
+  font-size: var(--comic-text-sm);
+  letter-spacing: var(--comic-track-wide);
 }
 .comic .brand-logo {
   padding: 0.25rem 1rem;
   font-family: var(--comic-font);
-  font-size: 1.6rem;
+  font-size: var(--comic-text-xl);
   color: var(--pop);
   -webkit-text-stroke: var(--comic-outline);
   paint-order: stroke fill;
@@ -115,11 +115,11 @@ html.comic ::selection {
 @media (max-width: 30rem) {
   .comic .nav-link {
     padding-inline: 0.55rem;
-    font-size: 1rem;
+    font-size: var(--comic-text-sm);
   }
   .comic .brand-logo {
     padding: 0.2rem 0.7rem;
-    font-size: 1.25rem;
+    font-size: var(--comic-text-md);
   }
 }
 
@@ -147,8 +147,8 @@ html.comic ::selection {
 }
 .comic .terminal-bar > span {
   font-family: var(--comic-font);
-  font-size: 1.1rem;
-  letter-spacing: 0.08em;
+  font-size: var(--comic-text-sm);
+  letter-spacing: var(--comic-track-wide);
   color: var(--ink);
 }
 .comic .terminal-bar button > span {
@@ -159,8 +159,8 @@ html.comic ::selection {
   display: inline-block;
   padding: 0.5rem 1.25rem;
   font-family: var(--comic-font);
-  font-size: 1.6rem;
-  letter-spacing: 0.05em;
+  font-size: var(--comic-text-xl);
+  letter-spacing: var(--comic-track-normal);
   color: var(--ink);
   background: rgb(var(--comic-paper-rgb));
   border: var(--comic-stroke) solid var(--ink);
@@ -190,8 +190,8 @@ html.comic ::selection {
   display: inline-block;
   padding: 0.3rem 0.9rem;
   font-family: var(--comic-font);
-  font-size: 1.5rem;
-  letter-spacing: 0.08em;
+  font-size: var(--comic-text-lg);
+  letter-spacing: var(--comic-track-wide);
   color: var(--ink);
   background: rgb(var(--comic-cyan-rgb));
   border: var(--comic-stroke) solid var(--ink);
@@ -224,7 +224,7 @@ html.comic ::selection {
   font-family: var(--comic-font);
   font-size: clamp(2.6rem, 6vw, 4.5rem);
   line-height: 1;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--comic-track-tight);
   -webkit-text-stroke: 0.07em var(--ink);
   paint-order: stroke fill;
   text-shadow: 0.06em 0.06em 0 var(--ink);
@@ -261,8 +261,8 @@ html.comic ::selection {
   position: relative;
   padding: 0.7rem 1.4rem;
   font-family: var(--comic-font);
-  font-size: 1.35rem;
-  letter-spacing: 0.06em;
+  font-size: var(--comic-text-lg);
+  letter-spacing: var(--comic-track-normal);
   color: var(--ink);
   background: var(--pop);
   border: var(--comic-stroke) solid var(--ink);
@@ -289,7 +289,7 @@ html.comic ::selection {
   place-items: center;
   width: 4.5rem;
   height: 3rem;
-  font-size: 1.2rem;
+  font-size: var(--comic-text-md);
   color: var(--pop);
   -webkit-text-stroke: 0.06em var(--ink);
   paint-order: stroke fill;
@@ -302,7 +302,7 @@ html.comic ::selection {
 }
 .comic :is(.btn-hacker, .btn-ghost).btn-sm {
   padding: 0.4rem 0.9rem;
-  font-size: 1.05rem;
+  font-size: var(--comic-text-sm);
 }
 .comic .btn-ghost:hover {
   background: var(--pop);
@@ -351,7 +351,7 @@ html.comic ::selection {
   font-family: var(--comic-font);
   font-size: clamp(3.5rem, 13vw, 8rem);
   line-height: 1;
-  letter-spacing: 0.03em;
+  letter-spacing: var(--comic-track-tight);
   color: rgb(var(--comic-yellow-rgb));
   -webkit-text-stroke: 0.06em rgb(var(--comic-ink-rgb));
   paint-order: stroke fill;

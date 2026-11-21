@@ -8,7 +8,10 @@ import { useComicMode } from '../terminal/useComicMode'
 import PageCurl, { capturePage, type CurlPage } from './PageCurl'
 import type { TurnDirection } from './curlGeometry'
 import { queueTurn, takeTurn } from './turnQueue'
-import { must } from '../utils/must'
+import { useDialog } from '../a11y/useDialog'
+import SectionMarker from './SectionMarker'
+import { PAGE_SETTLE_MS, useReveal } from './useReveal'
+import { Announce, AnnounceProvider } from '../a11y/announce'
 
 /** The next piece settles in once the previous page has finished turning away. */
 const PAGE_ENTER: Keyframe[] = [
@@ -26,7 +29,7 @@ interface Curl {
 }
 
 function ArtPage() {
-  const [isVisible, setIsVisible] = useState(false)
+  const isVisible = useReveal(PAGE_SETTLE_MS)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set())
   const [curl, setCurl] = useState<Curl | null>(null)
@@ -38,33 +41,9 @@ function ArtPage() {
   const reduced = useReducedMotion()
   const flips = comic && !reduced
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 100)
-    return () => clearTimeout(timer)
-  }, [])
-
   const handleImageLoad = (index: number) => {
     setLoadedImages((prev) => new Set(prev).add(index))
   }
-
-  const open = selectedIndex !== null
-
-  // The open lightbox owns the page behind it: no scrolling, nothing reachable, and focus returns
-  // to the piece that opened it. Cleanup also runs when the page is left with the lightbox open.
-  useEffect(() => {
-    if (!open) return
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
-    const root = must(document.getElementById('root'), '#root element')
-    const overflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    root.inert = true
-    closeRef.current?.focus()
-    return () => {
-      document.body.style.overflow = overflow
-      root.inert = false
-      opener?.focus()
-    }
-  }, [open])
 
   const openLightbox = (index: number) => setSelectedIndex(index)
 
@@ -73,6 +52,8 @@ function ArtPage() {
     setCurl(null)
     setSelectedIndex(null)
   }
+
+  useDialog(selectedIndex !== null, closeRef, closeLightbox)
 
   /**
    * Moves one piece in `direction`. In comic mode the page curls away first and the next piece only
@@ -133,11 +114,9 @@ function ArtPage() {
     setSelectedIndex((index) => (index === null ? null : finished.to))
   }
 
-  // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (selectedIndex === null) return
-      if (e.key === 'Escape') closeLightbox()
       if (e.key === 'ArrowLeft') goToPrevious()
       if (e.key === 'ArrowRight') goToNext()
     }
@@ -148,17 +127,13 @@ function ArtPage() {
 
   return (
     <div className="min-h-screen py-16">
-      {/* Header */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="mb-12"
       >
-        <div className="flex items-center gap-4 mb-8">
-          <span className="section-num font-mono text-accent text-base">05</span>
-          <div className="h-px flex-1 bg-gradient-to-r from-accent/50 to-transparent" />
-        </div>
+        <SectionMarker num="05" />
 
         <h1 className="text-5xl md:text-6xl font-bold text-[var(--text-primary)] mb-4">
           Personal Work
@@ -169,9 +144,8 @@ function ArtPage() {
         </p>
       </motion.section>
 
-      {/* Masonry Gallery */}
       <div className="art-grid columns-1 sm:columns-2 lg:columns-3 gap-6">
-        {artworks?.map((art, index) => (
+        {artworks.map((art, index) => (
           <TiltCard
             key={index}
             index={index}
@@ -195,7 +169,7 @@ function ArtPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+            className="fixed inset-0 z-50 bg-[var(--lightbox-backdrop)] flex items-center justify-center"
             onClick={closeLightbox}
           >
             <motion.button
@@ -210,7 +184,6 @@ function ArtPage() {
               <CloseOutlined />
             </motion.button>
 
-            {/* Navigation buttons */}
             <motion.button
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -239,7 +212,6 @@ function ArtPage() {
               <RightOutlined />
             </motion.button>
 
-            {/* Image with animation */}
             {flips ? (
               <img
                 ref={pageRef}
@@ -272,15 +244,18 @@ function ArtPage() {
               />
             )}
 
-            {/* Image counter */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="art-counter absolute bottom-6 left-1/2 z-30 -translate-x-1/2 text-white font-mono text-sm bg-[rgb(var(--scrim-rgb)/0.75)] px-4 py-2 rounded-full"
+              className="art-counter absolute bottom-6 left-1/2 z-30 -translate-x-1/2 text-[rgb(var(--overlay-fg-rgb))] font-mono text-sm bg-[rgb(var(--scrim-rgb)/0.75)] px-4 py-2 rounded-full"
             >
               {selectedIndex + 1} / {artworks.length}
             </motion.div>
+            {/* aria-modal hides the site-wide live region from screen readers, so the viewer announces inside itself. */}
+            <AnnounceProvider>
+              <Announce message={`${artworks[selectedIndex].alt}, ${selectedIndex + 1} of ${artworks.length}`} />
+            </AnnounceProvider>
           </motion.div>
         )}
       </AnimatePresence>,
@@ -290,7 +265,6 @@ function ArtPage() {
   )
 }
 
-// Tilt Card Component with 3D hover effect
 interface TiltCardProps {
   index: number
   art: { path: string; alt: string }
@@ -354,17 +328,15 @@ function TiltCard({ index, art, isVisible, isLoaded, onLoad, onClick }: TiltCard
           transformStyle: 'preserve-3d',
         }}
       >
-        {/* Loading skeleton */}
         {!isLoaded && (
           <div className="absolute inset-0 bg-[var(--elevated)] animate-pulse" />
         )}
 
-        {/* Glare effect */}
         <div
           className="absolute inset-0 pointer-events-none z-10 opacity-0 transition-opacity duration-300"
           style={{
             opacity: isHovering ? 0.15 : 0,
-            background: `radial-gradient(circle at ${50 + tilt.y * 5}% ${50 + tilt.x * 5}%, rgba(255,255,255,0.4) 0%, transparent 60%)`,
+            background: `radial-gradient(circle at ${50 + tilt.y * 5}% ${50 + tilt.x * 5}%, rgb(var(--overlay-fg-rgb) / 0.4) 0%, transparent 60%)`,
           }}
         />
 
@@ -381,15 +353,14 @@ function TiltCard({ index, art, isVisible, isLoaded, onLoad, onClick }: TiltCard
           }}
         />
 
-        {/* Hover overlay */}
         <div
           className="absolute inset-0 flex items-center justify-center transition-all duration-300"
           style={{
-            background: isHovering ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)',
+            background: `rgb(var(--scrim-rgb) / ${isHovering ? 0.5 : 0})`,
           }}
         >
           <div
-            className="art-view flex items-center gap-2 text-white font-mono text-sm uppercase tracking-wider transition-all duration-300"
+            className="art-view flex items-center gap-2 text-[rgb(var(--overlay-fg-rgb))] font-mono text-sm uppercase tracking-wider transition-all duration-300"
             style={{
               opacity: isHovering ? 1 : 0,
               transform: isHovering ? 'translateY(0)' : 'translateY(10px)',
@@ -402,7 +373,6 @@ function TiltCard({ index, art, isVisible, isLoaded, onLoad, onClick }: TiltCard
           </div>
         </div>
 
-        {/* Corner accents */}
         <div
           className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-accent rounded-tl-xl transition-opacity duration-300"
           style={{ opacity: isHovering ? 1 : 0 }}

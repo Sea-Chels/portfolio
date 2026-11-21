@@ -28,8 +28,8 @@
 }
 .comic .cs-card .cs-card-open {
   font-family: var(--comic-font);
-  font-size: 1.7rem;
-  letter-spacing: 0.05em;
+  font-size: var(--comic-text-xl);
+  letter-spacing: var(--comic-track-normal);
 }
 /* The concept box becomes a yellow caption. */
 .comic .cs-card .cs-panel {
@@ -43,9 +43,9 @@
 }
 .comic .cs-card .cs-panel .text-accent {
   font-family: var(--comic-font);
-  font-size: 1.25rem;
+  font-size: var(--comic-text-md);
   font-weight: 400;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--comic-track-normal);
 }
 
 /* Contact form inside its comic panel */
@@ -55,8 +55,8 @@
 }
 .comic [data-comic-panel] form label {
   font-family: var(--comic-font);
-  font-size: 1.1rem;
-  letter-spacing: 0.06em;
+  font-size: var(--comic-text-sm);
+  letter-spacing: var(--comic-track-normal);
 }
 
 /* Art: each piece is a framed panel, hung a little crooked. */
@@ -73,8 +73,8 @@
 .comic .art-view {
   padding: 0.35rem 0.9rem;
   font-family: var(--comic-font);
-  font-size: 1.4rem;
-  letter-spacing: 0.08em;
+  font-size: var(--comic-text-lg);
+  letter-spacing: var(--comic-track-wide);
   color: var(--ink);
   background: var(--pop);
   border: var(--comic-stroke) solid var(--ink);
@@ -89,8 +89,8 @@
 }
 .comic .art-counter {
   font-family: var(--comic-font);
-  font-size: 1.3rem;
-  letter-spacing: 0.08em;
+  font-size: var(--comic-text-md);
+  letter-spacing: var(--comic-track-wide);
   color: var(--ink);
   background: var(--pop);
   border: var(--comic-stroke) solid var(--ink);
@@ -115,8 +115,8 @@
   display: inline-block;
   padding: 0.3rem 0.7rem;
   font-family: var(--comic-font);
-  font-size: 1.2rem;
-  letter-spacing: 0.06em;
+  font-size: var(--comic-text-md);
+  letter-spacing: var(--comic-track-normal);
   color: var(--ink);
   background: var(--pop);
   border: var(--comic-stroke) solid var(--ink);

@@ -145,7 +145,7 @@ export default function CaseStudyModal({ study, onClose }: Props) {
       className="project-modal"
       styles={{
         content: { backgroundColor: 'var(--surface)', padding: 0, borderRadius: '12px', overflow: 'hidden' },
-        mask: { backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(8px)' },
+        mask: { backgroundColor: 'var(--backdrop)', backdropFilter: 'blur(var(--backdrop-blur))' },
       }}
     >
       {study && <Body study={study} />}

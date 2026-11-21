@@ -1,59 +1,13 @@
 @import "tailwindcss";
 
-/* Theme configuration for Tailwind v4 */
+/* Tailwind utilities read the same tokens as the rest of the CSS. */
 @theme {
-  /* Colors - Minimal Hacker Dark Theme */
-  --color-hacker-bg: #0a0a0a;
-  --color-hacker-surface: #141414;
-  --color-hacker-elevated: #1e1e1e;
-  --color-hacker-border: #2a2a2a;
-  --color-hacker-muted: #3a3a3a;
-
-  /* Colors - Light Theme */
-  --color-light-bg: #f8f9fa;
-  --color-light-surface: #ffffff;
-  --color-light-elevated: #f0f0f0;
-  --color-light-border: #e0e0e0;
-  --color-light-muted: #6b7280;
-
-  /* Brand Colors */
-  --color-accent: #FF7A64;
-  --color-accent-hover: #ff8f7d;
-  --color-accent-muted: rgba(255, 122, 100, 0.2);
-
-  /* Text Colors */
-  --color-text-primary: #e4e4e7;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
-
-  /* Fonts */
+  --color-accent: rgb(var(--accent-rgb));
+  --color-accent-hover: color-mix(in srgb, rgb(var(--accent-rgb)), white 15%);
   --font-sans: 'Inter', 'Helvetica', 'Arial', sans-serif;
-  --font-display: 'Satisfy', cursive;
-  --font-condensed: 'Saira Extra Condensed', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-
-  /* Animations */
-  --animate-fade-in: fadeIn 0.5s ease-out;
-  --animate-slide-up: slideUp 0.5s ease-out;
-  --animate-glow: glow 2s ease-in-out infinite;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(255, 122, 100, 0.5); }
-  50% { box-shadow: 0 0 20px rgba(255, 122, 100, 0.8); }
-}
-
-/* Base styles */
 :root {
   --bg: #0a0a0a;
   --surface: #141414;
@@ -67,9 +21,24 @@
   --warn-rgb: 250 204 21;
   --error-rgb: 248 113 113;
   --focus-ring: 2px solid rgb(var(--accent-rgb));
-  /* Comic mode's palette, from the DIY app's: ink, pop colors and the starburst. */
+  /* The page itself sits a shade warmer than the surfaces on it. */
+  --page-bg: #211b21;
+  --page-text: rgb(207 207 230);
+  /* Text on a filled accent button. */
+  --on-accent: #0a0a0a;
+  --grid-line: rgb(42 42 42 / 0.3);
   /* Backing for controls that float over images, so they stay legible on any artwork. */
   --scrim-rgb: 10 10 10;
+  --overlay-fg-rgb: 255 255 255;
+  /* Dims the page behind pop-ups; the art viewer goes darker so nothing competes with the piece. */
+  --backdrop: rgb(0 0 0 / 0.85);
+  --backdrop-blur: 8px;
+  --lightbox-backdrop: rgb(0 0 0 / 0.95);
+  /* The terminal window's traffic lights. */
+  --window-close: color-mix(in oklab, var(--color-red-500) 80%, transparent);
+  --window-minimize: color-mix(in oklab, var(--color-yellow-500) 80%, transparent);
+  --window-expand: color-mix(in oklab, var(--color-green-500) 80%, transparent);
+  /* Comic mode's palette, from the DIY app's: ink, pop colors and the starburst. */
   --comic-ink-rgb: 22 17 31;
   --comic-yellow-rgb: 255 210 63;
   --comic-pink-rgb: 255 79 216;
@@ -78,6 +47,14 @@
   --comic-sky-rgb: 29 155 240;
   --comic-paper-rgb: 255 255 255;
   --comic-font: 'Bangers', 'Impact', sans-serif;
+  /* Bangers' type scale and tracking: comic lettering comes in a few clearly different sizes. */
+  --comic-text-sm: 1.05rem;
+  --comic-text-md: 1.25rem;
+  --comic-text-lg: 1.45rem;
+  --comic-text-xl: 1.65rem;
+  --comic-track-tight: 0.04em;
+  --comic-track-normal: 0.06em;
+  --comic-track-wide: 0.08em;
   --comic-stroke: 3px;
   --comic-panel-stroke: 4px;
   --comic-caret-width: 3px;
@@ -93,6 +70,9 @@
   --text-primary: #18181b;
   --text-secondary: #3f3f46;
   --text-muted: #71717a;
+  --page-bg: rgb(242 242 247);
+  --page-text: #211b21;
+  --grid-line: rgb(0 0 0 / 0.05);
   --ok-rgb: 22 163 74;
   --warn-rgb: 161 98 7;
   --error-rgb: 220 38 38;
@@ -115,18 +95,26 @@ html {
 body {
   background-color: var(--bg);
   color: var(--text-primary);
-  font-family: 'Inter', 'Helvetica', 'Arial', sans-serif;
+  font-family: var(--font-sans);
   transition: background-color 0.3s ease, color 0.3s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-::selection {
-  background-color: rgba(255, 122, 100, 0.3);
-  color: #FF7A64;
+/* The page background: !important beats the base body rule; comic mode's more specific rules still win. */
+html,
+body,
+.app-root {
+  color: var(--page-text) !important;
+  background-color: var(--page-bg) !important;
+  transition: 0.5s;
 }
 
-/* Component classes */
+::selection {
+  background-color: rgb(var(--accent-rgb) / 0.3);
+  color: rgb(var(--accent-rgb));
+}
+
 /* Primary (.btn-hacker) and secondary (.btn-ghost) buttons share one shape. */
 .btn-hacker,
 .btn-ghost {
@@ -134,10 +122,10 @@ body {
   background-color: transparent;
   border: 1px solid rgb(var(--accent-rgb));
   color: rgb(var(--accent-rgb));
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--tracking-wider);
   transition: all 0.3s ease-out;
   cursor: pointer;
 }
@@ -158,33 +146,18 @@ body {
 }
 
 .btn-hacker:hover {
-  background-color: #FF7A64;
-  color: #0a0a0a;
-  box-shadow: 0 0 20px rgba(255, 122, 100, 0.4);
+  background-color: rgb(var(--accent-rgb));
+  color: var(--on-accent);
+  box-shadow: 0 0 20px rgb(var(--accent-rgb) / 0.4);
 }
 
-.text-gradient {
-  background: linear-gradient(to right, #FF7A64, #fb923c);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Grid background pattern */
 .grid-bg {
   background-image:
-    linear-gradient(to right, rgba(42, 42, 42, 0.3) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(42, 42, 42, 0.3) 1px, transparent 1px);
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
-.light .grid-bg {
-  background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-}
-
-/* Card styling */
 .card-hacker {
   background-color: var(--surface);
   border: 1px solid var(--border);
@@ -193,13 +166,8 @@ body {
 }
 
 .card-hacker:hover {
-  border-color: rgba(255, 122, 100, 0.5);
-  box-shadow: 0 0 30px rgba(255, 122, 100, 0.1);
-}
-
-/* Glow effect */
-.glow-accent {
-  box-shadow: 0 0 20px rgba(255, 122, 100, 0.3);
+  border-color: rgb(var(--accent-rgb) / 0.5);
+  box-shadow: 0 0 30px rgb(var(--accent-rgb) / 0.1);
 }
 
 /* Comic mode draws its own, thicker caret (CSS can't set a caret's width), so it's inert outside it. */
@@ -215,16 +183,16 @@ body {
   width: 2.375rem;
   height: 2.375rem;
   border-radius: 9999px;
-  font-size: 1rem;
-  color: #fff;
+  font-size: var(--text-base);
+  color: rgb(var(--overlay-fg-rgb));
   background: rgb(var(--scrim-rgb) / 0.72);
-  border: 1px solid rgb(255 255 255 / 0.45);
+  border: 1px solid rgb(var(--overlay-fg-rgb) / 0.45);
   box-shadow: 0 2px 10px rgb(var(--scrim-rgb) / 0.4);
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 .overlay-control:hover,
 .project-modal .ant-modal-close:hover {
-  color: #fff;
+  color: rgb(var(--overlay-fg-rgb));
   background: rgb(var(--scrim-rgb) / 0.9);
   transform: scale(1.06);
 }
@@ -236,5 +204,17 @@ body {
   .overlay-control:hover,
   .project-modal .ant-modal-close:hover {
     transform: none;
+  }
+
+  /* Covers every CSS animation and transition on the site; JS-driven motion checks useReducedMotion. */
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

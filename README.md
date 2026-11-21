@@ -6,17 +6,15 @@ To get started using this repository, please see the details below.
 
 # Getting Started
 
-### `npm i`
+```sh
+npm i
+npm run dev      # http://localhost:5174 (pinned; fails instead of picking another port if it's taken)
+npm test         # unit tests (Vitest)
+npm run build    # type-check and build to dist/
+npm run deploy   # build, then publish dist/ to GitHub Pages
+```
 
-In order to run this on your local machine, you will need to install all of the dependencies associated with this project. Some dependencies include but are not limited to: 
-
-    - React / React DOM
-    - Ant Design UI package
-    - NPM 
-
-### `npm start`
-
-Run npm start to start the application up. You will see any lint errors in the console, and the local host will also reload when you make changes to the main application. 
+Pages are real URLs (`/`, `/about`, `/art`). The build writes a copy of `index.html` for each one, plus a `404.html`, because GitHub Pages can't rewrite paths to the app.
 
 ### Usage
 

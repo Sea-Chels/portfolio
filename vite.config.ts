@@ -26,11 +26,17 @@ function spaPages(): Plugin {
   }
 }
 
-// https://vitejs.dev/config/
+/** Pinned so it never collides with other local projects; 5173 belongs to library-walk. */
+const DEV_PORT = 5174
+
 export default defineConfig({
   plugins: [react(), spaPages()],
   base: '/',
+  server: { port: DEV_PORT, strictPort: true },
+  preview: { port: DEV_PORT, strictPort: true },
   build: {
     outDir: OUT_DIR,
+    // three.js alone is ~560 kB and only downloads when the 3D demo opens; anything else this big should warn.
+    chunkSizeWarningLimit: 600,
   },
 })

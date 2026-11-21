@@ -7,7 +7,7 @@
 
 .cs-label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -21,7 +21,7 @@
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s, background-color 0.2s;
 }
@@ -51,7 +51,7 @@
   border-radius: 0.375rem;
   padding: 0.75rem 1rem;
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   line-height: 1.6;
   color: var(--text-secondary);
 }
@@ -65,7 +65,7 @@
   background-color: rgb(var(--tone) / 0.1);
   padding: 0.5rem 0.75rem;
   border-radius: 0 0.375rem 0.375rem 0;
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   color: var(--text-secondary);
 }
 
@@ -87,7 +87,7 @@
   border: 1px solid var(--border);
   border-radius: 0.375rem;
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .cs-range {
@@ -110,4 +110,9 @@
 .cs-card:has(.cs-card-open:focus-visible) {
   outline: var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* The 3D demo's night-sky backdrop. */
+.toon-stage {
+  background: radial-gradient(circle at 50% 40%, #1c2230, #0a0c10);
 }

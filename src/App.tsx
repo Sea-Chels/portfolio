@@ -1,16 +1,18 @@
-import './Css/App.css'
+import { lazy, Suspense } from 'react'
 import '@fontsource/bangers'
 import './Css/Comic.css'
 import './Css/ComicPages.css'
+import { MotionConfig } from 'framer-motion'
 import { AnnounceProvider } from './a11y/announce'
 import ComicMode from './terminal/ComicMode'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 import NavBar from './Components/NavBar'
 import LandingPage from './Components/LandingPage'
-import AboutPage from './Components/AboutPage'
-import ArtPage from './Components/ArtPage'
-import NotFoundPage from './notFound/NotFoundPage'
 import { useRoute } from './routing/useRoute'
+
+const AboutPage = lazy(() => import('./Components/AboutPage'))
+const ArtPage = lazy(() => import('./Components/ArtPage'))
+const NotFoundPage = lazy(() => import('./notFound/NotFoundPage'))
 
 function AppContent() {
   const { route, path, navigate } = useRoute()
@@ -20,10 +22,12 @@ function AppContent() {
     <div className={`app-root min-h-screen ${theme}`}>
       <NavBar currentPage={route.page} navigate={navigate} />
       <main className="px-6 md:px-10 lg:px-12">
-        {route.page === 'dev' && <LandingPage />}
-        {route.page === 'about' && <AboutPage />}
-        {route.page === 'art' && <ArtPage />}
-        {route.page === 'notFound' && <NotFoundPage key={path} path={path} navigate={navigate} />}
+        <Suspense fallback={<div className="min-h-screen" />}>
+          {route.page === 'dev' && <LandingPage />}
+          {route.page === 'about' && <AboutPage />}
+          {route.page === 'art' && <ArtPage />}
+          {route.page === 'notFound' && <NotFoundPage key={path} path={path} navigate={navigate} />}
+        </Suspense>
       </main>
       <ComicMode />
     </div>
@@ -32,11 +36,13 @@ function AppContent() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AnnounceProvider>
-        <AppContent />
-      </AnnounceProvider>
-    </ThemeProvider>
+    <MotionConfig reducedMotion="user">
+      <ThemeProvider>
+        <AnnounceProvider>
+          <AppContent />
+        </AnnounceProvider>
+      </ThemeProvider>
+    </MotionConfig>
   )
 }
 

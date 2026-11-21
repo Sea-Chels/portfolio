@@ -3,6 +3,7 @@ import { HomeOutlined, SearchOutlined } from '@ant-design/icons'
 import { useAnnounce } from '../a11y/announce'
 import { HOME, followInApp, type NavigablePage } from '../routing/routes'
 import { displayPath, searchLines, type SearchLine } from './search'
+import SectionMarker from '../Components/SectionMarker'
 
 const LINE_CLASS: Record<SearchLine['kind'], string> = {
   command: 'text-[var(--text-muted)]',
@@ -36,10 +37,7 @@ function NotFoundPage({ path, navigate }: NotFoundPageProps) {
 
   return (
     <div className="min-h-screen py-16">
-      <div className="flex items-center gap-4 mb-8">
-        <span className="section-num font-mono text-accent text-base">404</span>
-        <div className="h-px flex-1 bg-gradient-to-r from-accent/50 to-transparent" />
-      </div>
+      <SectionMarker num="404" />
 
       <h1 className="text-5xl md:text-6xl font-bold text-[var(--text-primary)] mb-4">This page wandered off.</h1>
       <p className="mb-10 max-w-xl text-lg text-[var(--text-secondary)]">
@@ -49,9 +47,9 @@ function NotFoundPage({ path, navigate }: NotFoundPageProps) {
 
       <div data-comic-panel className="mb-8 max-w-3xl overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-2xl">
         <div className="terminal-bar flex items-center gap-2 border-b border-[var(--border)] bg-[var(--elevated)] px-4 py-2">
-          <span aria-hidden className="h-3 w-3 rounded-full bg-red-500/80" />
-          <span aria-hidden className="h-3 w-3 rounded-full bg-yellow-500/80" />
-          <span aria-hidden className="h-3 w-3 rounded-full bg-green-500/80" />
+          {['--window-close', '--window-minimize', '--window-expand'].map((tone) => (
+            <span key={tone} aria-hidden className="h-3 w-3 rounded-full" style={{ background: `var(${tone})` }} />
+          ))}
           <span className="ml-2 font-mono text-sm text-[var(--text-muted)]">~/search-party</span>
         </div>
         <ol ref={outputRef} aria-label="Search log" className="max-h-80 space-y-2 overflow-y-auto p-6 font-mono text-sm md:p-8">
