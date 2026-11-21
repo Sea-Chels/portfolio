@@ -46,11 +46,11 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
             <span className="text-[var(--text-muted)] group-hover:text-accent transition-colors">/&gt;</span>
           </a>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center sm:gap-1">
             {ROUTES.map((route) => {
               const isActive = currentPage === route.page
               const baseClasses =
-                'nav-link px-2 sm:px-4 py-2 font-mono text-sm tracking-wider transition-all duration-200'
+                'nav-link px-1 sm:px-4 py-2 font-mono text-xs sm:text-sm sm:tracking-wider transition-all duration-200'
               const activeClasses = isActive
                 ? 'text-accent border-b-2 border-accent'
                 : 'text-[var(--text-secondary)] hover:text-accent'
@@ -69,7 +69,7 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
 
             <button
               onClick={toggleTheme}
-              className="ml-2 sm:ml-4 p-2 rounded-lg border border-[var(--border)] hover:border-accent hover:text-accent transition-all duration-200"
+              className="ml-1 sm:ml-4 p-1.5 sm:p-2 rounded-lg border border-[var(--border)] hover:border-accent hover:text-accent transition-all duration-200"
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             >
               {theme === 'dark' ? (

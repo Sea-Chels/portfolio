@@ -114,8 +114,9 @@ html.comic ::selection {
 /* Bangers runs wider than the mono nav, so phones get tighter links and a smaller logo burst. */
 @media (max-width: 30rem) {
   .comic .nav-link {
-    padding-inline: 0.55rem;
+    padding-inline: 0.3rem;
     font-size: var(--comic-text-sm);
+    letter-spacing: normal;
   }
   .comic .brand-logo {
     padding: 0.2rem 0.7rem;
