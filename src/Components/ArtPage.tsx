@@ -1,12 +1,42 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type KeyboardEvent as ReactKeyboardEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { artworks } from '../Media'
 import { CloseOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useReducedMotion } from '../a11y/useReducedMotion'
+import { useComicMode } from '../terminal/useComicMode'
+import PageCurl, { capturePage, type CurlPage } from './PageCurl'
+import type { TurnDirection } from './curlGeometry'
+import { queueTurn, takeTurn } from './turnQueue'
+import { must } from '../utils/must'
+
+/** The next piece settles in once the previous page has finished turning away. */
+const PAGE_ENTER: Keyframe[] = [
+  { opacity: 0, transform: 'scale(0.97)' },
+  { opacity: 1, transform: 'scale(1)' },
+]
+const PAGE_ENTER_MS = 200
+
+interface Curl {
+  id: number
+  page: CurlPage
+  direction: TurnDirection
+  /** The piece to show once the page has finished turning. */
+  to: number
+}
 
 function ArtPage() {
   const [isVisible, setIsVisible] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set())
+  const [curl, setCurl] = useState<Curl | null>(null)
+  const pageRef = useRef<HTMLImageElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const nextCurlId = useRef(0)
+  const pendingTurns = useRef(0)
+  const comic = useComicMode()
+  const reduced = useReducedMotion()
+  const flips = comic && !reduced
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100)
@@ -17,30 +47,90 @@ function ArtPage() {
     setLoadedImages((prev) => new Set(prev).add(index))
   }
 
-  const openLightbox = (index: number) => {
-    setSelectedIndex(index)
+  const open = selectedIndex !== null
+
+  // The open lightbox owns the page behind it: no scrolling, nothing reachable, and focus returns
+  // to the piece that opened it. Cleanup also runs when the page is left with the lightbox open.
+  useEffect(() => {
+    if (!open) return
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const root = must(document.getElementById('root'), '#root element')
+    const overflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-  }
+    root.inert = true
+    closeRef.current?.focus()
+    return () => {
+      document.body.style.overflow = overflow
+      root.inert = false
+      opener?.focus()
+    }
+  }, [open])
+
+  const openLightbox = (index: number) => setSelectedIndex(index)
 
   const closeLightbox = () => {
+    pendingTurns.current = 0
+    setCurl(null)
     setSelectedIndex(null)
-    document.body.style.overflow = 'auto'
   }
 
-  const goToPrevious = () => {
-    if (selectedIndex !== null) {
-      setSelectedIndex(
-        selectedIndex === 0 ? artworks.length - 1 : selectedIndex - 1
-      )
+  /**
+   * Moves one piece in `direction`. In comic mode the page curls away first and the next piece only
+   * appears once it's gone; presses made while a page is still turning wait their turn.
+   */
+  const step = (direction: TurnDirection) => {
+    if (selectedIndex === null) return
+    if (flips && curl) {
+      pendingTurns.current = queueTurn(pendingTurns.current, direction)
+      return
+    }
+    const to = (selectedIndex + direction + artworks.length) % artworks.length
+    if (flips && pageRef.current) {
+      setCurl({ id: nextCurlId.current++, page: capturePage(pageRef.current), direction, to })
+    } else {
+      setSelectedIndex(to)
     }
   }
 
-  const goToNext = () => {
-    if (selectedIndex !== null) {
-      setSelectedIndex(
-        selectedIndex === artworks.length - 1 ? 0 : selectedIndex + 1
-      )
+  const goToPrevious = () => step(-1)
+  const goToNext = () => step(1)
+
+  useEffect(() => {
+    if (flips) return
+    pendingTurns.current = 0
+    setCurl(null)
+  }, [flips])
+
+  useEffect(() => {
+    if (curl) return
+    const next = takeTurn(pendingTurns.current)
+    if (!next) return
+    let cancelled = false
+    const turn = () => {
+      if (cancelled) return
+      pendingTurns.current = next.rest
+      step(next.direction)
     }
+    // The piece that just appeared has to finish loading before it can be captured and turned.
+    const page = pageRef.current
+    if (page && !page.complete) page.decode().then(turn, turn)
+    else turn()
+    return () => {
+      cancelled = true
+    }
+  }, [curl])
+
+  // One persistent page element whose source changes: remounting a keyed <img> per piece left the
+  // old elements behind in the DOM after each turn, stacking up beside the new one.
+  useEffect(() => {
+    if (!flips || selectedIndex === null) return
+    const entrance = pageRef.current?.animate(PAGE_ENTER, { duration: PAGE_ENTER_MS, easing: 'ease-out' })
+    return () => entrance?.cancel()
+  }, [selectedIndex, flips])
+
+  const finishCurl = (finished: Curl) => {
+    setCurl((current) => (current?.id === finished.id ? null : current))
+    setSelectedIndex((index) => (index === null ? null : finished.to))
   }
 
   // Handle keyboard navigation
@@ -54,7 +144,7 @@ function ArtPage() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [selectedIndex])
+  }, [selectedIndex, curl, flips])
 
   return (
     <div className="min-h-screen py-16">
@@ -66,7 +156,7 @@ function ArtPage() {
         className="mb-12"
       >
         <div className="flex items-center gap-4 mb-8">
-          <span className="font-mono text-accent text-base">05</span>
+          <span className="section-num font-mono text-accent text-base">05</span>
           <div className="h-px flex-1 bg-gradient-to-r from-accent/50 to-transparent" />
         </div>
 
@@ -80,7 +170,7 @@ function ArtPage() {
       </motion.section>
 
       {/* Masonry Gallery */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
+      <div className="art-grid columns-1 sm:columns-2 lg:columns-3 gap-6">
         {artworks?.map((art, index) => (
           <TiltCard
             key={index}
@@ -94,10 +184,13 @@ function ArtPage() {
         ))}
       </div>
 
-      {/* Lightbox */}
+      {createPortal(
       <AnimatePresence>
         {selectedIndex !== null && (
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Artwork viewer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -105,13 +198,14 @@ function ArtPage() {
             className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
             onClick={closeLightbox}
           >
-            {/* Close button */}
             <motion.button
+              ref={closeRef}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               onClick={closeLightbox}
-              className="absolute top-6 right-6 text-white/70 hover:text-white text-2xl p-2 transition-colors z-10"
+              aria-label="Close"
+              className="overlay-control absolute top-3 right-3 z-30 sm:top-6 sm:right-6"
             >
               <CloseOutlined />
             </motion.button>
@@ -125,7 +219,8 @@ function ArtPage() {
                 e.stopPropagation()
                 goToPrevious()
               }}
-              className="absolute left-6 text-white/70 hover:text-white text-3xl p-4 transition-colors z-10 hover:scale-110"
+              aria-label="Previous artwork"
+              className="overlay-control absolute left-3 z-30 sm:left-6"
             >
               <LeftOutlined />
             </motion.button>
@@ -138,38 +233,59 @@ function ArtPage() {
                 e.stopPropagation()
                 goToNext()
               }}
-              className="absolute right-6 text-white/70 hover:text-white text-3xl p-4 transition-colors z-10 hover:scale-110"
+              aria-label="Next artwork"
+              className="overlay-control absolute right-3 z-30 sm:right-6"
             >
               <RightOutlined />
             </motion.button>
 
             {/* Image with animation */}
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={selectedIndex}
+            {flips ? (
+              <img
+                ref={pageRef}
                 src={artworks[selectedIndex].path}
                 alt={artworks[selectedIndex].alt}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
                 onClick={(e) => e.stopPropagation()}
-                className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                className={`art-lightbox-img max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl ${curl ? 'invisible' : ''}`}
               />
-            </AnimatePresence>
+            ) : (
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={selectedIndex}
+                  src={artworks[selectedIndex].path}
+                  alt={artworks[selectedIndex].alt}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="art-lightbox-img max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                />
+              </AnimatePresence>
+            )}
+            {flips && curl && (
+              <PageCurl
+                key={curl.id}
+                page={curl.page}
+                direction={curl.direction}
+                onDone={() => finishCurl(curl)}
+              />
+            )}
 
             {/* Image counter */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 font-mono text-sm bg-black/50 px-4 py-2 rounded-full"
+              className="art-counter absolute bottom-6 left-1/2 z-30 -translate-x-1/2 text-white font-mono text-sm bg-[rgb(var(--scrim-rgb)/0.75)] px-4 py-2 rounded-full"
             >
               {selectedIndex + 1} / {artworks.length}
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body,
+      )}
     </div>
   )
 }
@@ -206,6 +322,12 @@ function TiltCard({ index, art, isVisible, isLoaded, onLoad, onClick }: TiltCard
     setIsHovering(false)
   }
 
+  const handleKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return
+    e.preventDefault()
+    onClick()
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -215,11 +337,17 @@ function TiltCard({ index, art, isVisible, isLoaded, onLoad, onClick }: TiltCard
     >
       <div
         ref={cardRef}
+        role="button"
+        tabIndex={0}
+        aria-label={`View larger: ${art.alt}`}
         onClick={onClick}
+        onKeyDown={handleKeyDown}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={handleMouseLeave}
-        className="relative cursor-pointer overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]"
+        onFocus={(e) => setIsHovering(e.currentTarget.matches(':focus-visible'))}
+        onBlur={handleMouseLeave}
+        className="art-frame relative cursor-pointer overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]"
         style={{
           transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovering ? 1.02 : 1})`,
           transition: 'transform 0.15s ease-out',
@@ -261,7 +389,7 @@ function TiltCard({ index, art, isVisible, isLoaded, onLoad, onClick }: TiltCard
           }}
         >
           <div
-            className="flex items-center gap-2 text-white font-mono text-sm uppercase tracking-wider transition-all duration-300"
+            className="art-view flex items-center gap-2 text-white font-mono text-sm uppercase tracking-wider transition-all duration-300"
             style={{
               opacity: isHovering ? 1 : 0,
               transform: isHovering ? 'translateY(0)' : 'translateY(10px)',
