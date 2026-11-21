@@ -1,22 +1,26 @@
 import { useTheme } from '../context/ThemeContext'
-import ScrollIntoView from 'react-scroll-into-view'
+import type { MouseEvent } from 'react'
 import GlassSurface from './ui/GlassSurface'
-
-type Page = 'dev' | 'about' | 'art'
+import { HOME, ROUTES, followInApp, type NavigablePage, type Page, type Route } from '../routing/routes'
 
 interface NavBarProps {
   currentPage: Page
-  setCurrentPage: (page: Page) => void
+  navigate: (page: NavigablePage) => void
 }
 
-function NavBar({ currentPage, setCurrentPage }: NavBarProps) {
+function NavBar({ currentPage, navigate }: NavBarProps) {
   const { theme, toggleTheme } = useTheme()
 
-  const navItems: { id: Page; label: string }[] = [
-    { id: 'dev', label: 'WORK' },
-    { id: 'about', label: 'ABOUT' },
-    { id: 'art', label: 'ART' },
-  ]
+  /** Real links, so they open in new tabs; a plain click switches pages without reloading. */
+  const follow = (route: Route<NavigablePage>) => (e: MouseEvent<HTMLAnchorElement>) =>
+    followInApp(e, () => {
+      // WORK while already on the home page jumps to the case studies.
+      if (route.page === 'dev' && currentPage === 'dev') {
+        document.getElementById('web-projects')?.scrollIntoView({ behavior: 'smooth' })
+        return
+      }
+      navigate(route.page)
+    })
 
   return (
     <nav className="sticky top-0 z-50">
@@ -29,54 +33,46 @@ function NavBar({ currentPage, setCurrentPage }: NavBarProps) {
         contentClassName="w-full h-full rounded-[inherit] relative z-10"
         style={{ boxShadow: 'none', border: 'none' }}
       >
-        <div className="w-full h-full flex items-center px-6 md:px-10 lg:px-12">
+        <div className="w-full h-full flex items-center px-4 sm:px-6 md:px-10 lg:px-12">
           <div className="flex-1 flex items-center justify-between">
           {/* Logo */}
-          <button
-            onClick={() => setCurrentPage('dev')}
-            className="group flex items-center gap-1 font-mono text-xl text-accent hover:text-accent-hover transition-colors"
+          <a
+            href={HOME.path}
+            onClick={(e) => followInApp(e, () => navigate(HOME.page))}
+            aria-label="Chelby Sallady, home"
+            className="brand-logo group flex items-center gap-1 font-mono text-xl text-accent hover:text-accent-hover transition-colors"
           >
             <span className="text-[var(--text-muted)] group-hover:text-accent transition-colors">&lt;</span>
             <span>CS</span>
             <span className="text-[var(--text-muted)] group-hover:text-accent transition-colors">/&gt;</span>
-          </button>
+          </a>
 
           {/* Navigation Links */}
           <div className="flex items-center gap-1">
-            {navItems.map((item) => {
-              const isActive = currentPage === item.id
+            {ROUTES.map((route) => {
+              const isActive = currentPage === route.page
               const baseClasses =
-                'px-4 py-2 font-mono text-sm tracking-wider transition-all duration-200'
+                'nav-link px-2 sm:px-4 py-2 font-mono text-sm tracking-wider transition-all duration-200'
               const activeClasses = isActive
                 ? 'text-accent border-b-2 border-accent'
                 : 'text-[var(--text-secondary)] hover:text-accent'
-
-              // Special handling for WORK button when on dev page
-              if (item.id === 'dev' && currentPage === 'dev') {
-                return (
-                  <ScrollIntoView key={item.id} selector="#web-projects">
-                    <button className={`${baseClasses} ${activeClasses}`}>
-                      {item.label}
-                    </button>
-                  </ScrollIntoView>
-                )
-              }
-
               return (
-                <button
-                  key={item.id}
-                  onClick={() => setCurrentPage(item.id)}
+                <a
+                  key={route.page}
+                  href={route.path}
+                  onClick={follow(route)}
+                  aria-current={isActive ? 'page' : undefined}
                   className={`${baseClasses} ${activeClasses}`}
                 >
-                  {item.label}
-                </button>
+                  {route.label}
+                </a>
               )
             })}
 
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="ml-4 p-2 rounded-lg border border-[var(--border)] hover:border-accent hover:text-accent transition-all duration-200"
+              className="ml-2 sm:ml-4 p-2 rounded-lg border border-[var(--border)] hover:border-accent hover:text-accent transition-all duration-200"
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             >
               {theme === 'dark' ? (

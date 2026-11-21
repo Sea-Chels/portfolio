@@ -35,17 +35,6 @@ declare module '*.pdf' {
   export default src
 }
 
-declare module 'react-scroll-into-view' {
-  import { ReactNode } from 'react'
-  interface ScrollIntoViewProps {
-    selector: string
-    className?: string
-    children?: ReactNode
-  }
-  const ScrollIntoView: React.FC<ScrollIntoViewProps>
-  export default ScrollIntoView
-}
-
 declare module 'react-responsive-masonry' {
   import { ReactNode } from 'react'
   interface MasonryProps {
