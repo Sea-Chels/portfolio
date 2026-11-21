@@ -12,6 +12,7 @@ import { useRoute } from './routing/useRoute'
 
 const AboutPage = lazy(() => import('./Components/AboutPage'))
 const ArtPage = lazy(() => import('./Components/ArtPage'))
+const HangoutPage = lazy(() => import('./Components/HangoutPage'))
 const NotFoundPage = lazy(() => import('./notFound/NotFoundPage'))
 
 function AppContent() {
@@ -26,6 +27,7 @@ function AppContent() {
           {route.page === 'dev' && <LandingPage />}
           {route.page === 'about' && <AboutPage />}
           {route.page === 'art' && <ArtPage />}
+          {route.page === 'hangout' && <HangoutPage />}
           {route.page === 'notFound' && <NotFoundPage key={path} path={path} navigate={navigate} />}
         </Suspense>
       </main>

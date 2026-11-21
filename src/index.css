@@ -232,3 +232,14 @@ body,
     --skills-word-size: var(--text-2xl);
   }
 }
+
+/* The canvas keeps the scene's own 16:9 aspect (height: auto), so capping the stage's width caps its height to fit the screen. */
+.hangout-stage {
+  max-width: calc(78svh * 16 / 9);
+  margin-inline: auto;
+}
+
+.hangout-stage canvas {
+  width: 100%;
+  height: auto;
+}

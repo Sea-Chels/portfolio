@@ -8,6 +8,7 @@
 		"@ant-design/icons": "^5.2.6",
 		"@ant-design/v5-patch-for-react-19": "^1.0.3",
 		"@fontsource/bangers": "^5.3.0",
+		"@sea-chels/hangout": "file:../hangout",
 		"antd": "^5.10.0",
 		"framer-motion": "^12.25.0",
 		"matter-js": "^0.20.0",

@@ -1,4 +1,4 @@
-export type Page = 'dev' | 'about' | 'art' | 'notFound'
+export type Page = 'dev' | 'about' | 'art' | 'hangout' | 'notFound'
 /** Pages the nav can link to: everything but the 404. */
 export type NavigablePage = Exclude<Page, 'notFound'>
 
@@ -16,6 +16,7 @@ export const ROUTES: readonly Route<NavigablePage>[] = [
   { page: 'dev', path: '/', label: 'WORK', title: SITE_TITLE },
   { page: 'about', path: '/about', label: 'ABOUT', title: `About · ${SITE_TITLE}` },
   { page: 'art', path: '/art', label: 'ART', title: `Art · ${SITE_TITLE}` },
+  { page: 'hangout', path: '/hangout', label: 'HANGOUT', title: `Hangout · ${SITE_TITLE}` },
 ]
 
 export const HOME = ROUTES[0]
