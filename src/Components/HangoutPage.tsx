@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
 import { motion } from 'framer-motion'
 import { mountHangout, type HangoutHandle, type Presence } from '@sea-chels/hangout/engine'
 import { fallPark } from '@sea-chels/hangout/scenes/fall-park'
@@ -7,11 +8,14 @@ import { useReducedMotion } from '../a11y/useReducedMotion'
 import { must } from '../utils/must'
 import SectionMarker from './SectionMarker'
 import { presenceText } from './hangoutPresence'
+import { useFullscreen } from './useFullscreen'
 
 /** The shared park, a Cloudflare Durable Object from the hangout repo. Local dev gets its own room, away from visitors. */
 const ROOM_URL = `wss://hangout.sea-chels-hangout.workers.dev/rooms/${import.meta.env.DEV ? 'fall-park-dev' : 'fall-park'}`
 
 const PARK = fallPark()
+/** The scene's own shape, which the stage's CSS sizes the canvas by. */
+const STAGE_STYLE = { '--hangout-aspect': PARK.width / PARK.height } as CSSProperties
 
 function HangoutPage() {
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -21,6 +25,9 @@ function HangoutPage() {
   const initialReducedMotion = useRef(reducedMotion)
   const [presence, setPresence] = useState<Presence>({ status: 'connecting', others: 0 })
   const [yours, setYours] = useState<string | null>(null)
+  const screen = useRef<HTMLDivElement>(null)
+  const { full, enter, exit } = useFullscreen(screen)
+  const wasFull = useRef(full)
 
   useEffect(() => {
     const handle = mountHangout(must(canvas.current, 'hangout canvas'), {
@@ -42,6 +49,12 @@ function HangoutPage() {
     park.current?.setReducedMotion(reducedMotion)
   }, [reducedMotion])
 
+  useEffect(() => {
+    if (full === wasFull.current) return
+    wasFull.current = full
+    announce(full ? 'Full screen. Press Escape to leave.' : 'Left full screen.')
+  }, [full, announce])
+
   return (
     <div className="page-width min-h-screen py-16">
       <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-8">
@@ -53,20 +66,29 @@ function HangoutPage() {
         </p>
       </motion.section>
 
-      <div className="hangout-stage">
-        <canvas ref={canvas} aria-describedby="hangout-help" className="block rounded-xl border border-[var(--border)]" />
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <p className="font-mono text-sm text-accent">{presenceText(presence)}</p>
-          {yours && (
-            <button type="button" className="btn-ghost btn-sm" onClick={() => park.current?.drop()}>
-              Put down {PARK.itemName(yours)}
-            </button>
-          )}
+      <div className="hangout-stage" style={STAGE_STYLE}>
+        <div ref={screen} className={`hangout-screen${full ? ' is-full' : ''}`}>
+          <canvas ref={canvas} aria-describedby="hangout-help" className="block rounded-xl border border-[var(--border)]" />
+          <div className="hangout-controls">
+            <p className="font-mono text-sm text-accent">{presenceText(presence)}</p>
+            <div className="flex flex-wrap gap-3">
+              {yours && (
+                <button type="button" className="btn-ghost btn-sm" onClick={() => park.current?.drop()}>
+                  Put down {PARK.itemName(yours)}
+                </button>
+              )}
+              <button type="button" className="btn-ghost btn-sm inline-flex items-center gap-2" onClick={full ? exit : enter}>
+                {full ? <FullscreenExitOutlined aria-hidden /> : <FullscreenOutlined aria-hidden />}
+                {full ? 'Exit full screen' : 'Full screen'}
+              </button>
+            </div>
+          </div>
         </div>
         <p id="hangout-help" className="mt-2 text-[var(--text-secondary)]">
           Everyone else on this page shows up as a colored cursor. Click or tap to play. With a keyboard, focus the
           park, use the arrow keys to move (hold Shift to go faster) and press Enter to kick leaves, shake a tree or open
-          the picnic basket. Press Escape to put a toy down.
+          the picnic basket. Press Escape to put a toy down. Full screen makes the park bigger; press Escape or Exit full
+          screen to leave it.
         </p>
       </div>
     </div>

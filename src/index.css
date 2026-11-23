@@ -241,15 +241,55 @@ body,
   }
 }
 
-/* The canvas keeps the scene's own 16:9 aspect (height: auto), so capping the stage's width caps its height to fit the screen. */
+/* The canvas keeps the scene's own aspect (height: auto), so capping the stage's width caps its height to fit the screen. */
 .hangout-stage {
-  max-width: calc(78svh * 16 / 9);
+  --hangout-controls-height: calc(var(--spacing) * 10);
+  --hangout-controls-gap: calc(var(--spacing) * 4);
+  max-width: calc(78svh * var(--hangout-aspect));
   margin-inline: auto;
 }
 
 .hangout-stage canvas {
   width: 100%;
   height: auto;
+}
+
+.hangout-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+  margin-top: var(--hangout-controls-gap);
+}
+
+/*
+ * Full screen: the browser's own, or the whole window where that isn't available. The canvas width
+ * is whichever runs out first, the screen's width or its height (less the controls) at the scene's aspect,
+ * so pointer positions still map straight onto the scene.
+ */
+.hangout-screen.is-full {
+  --hangout-full-padding: calc(var(--spacing) * 4);
+  --hangout-full-width: min(
+    100%,
+    calc((100dvh - 2 * var(--hangout-full-padding) - var(--hangout-controls-height) - var(--hangout-controls-gap)) * var(--hangout-aspect))
+  );
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--hangout-full-padding);
+  background: var(--bg);
+}
+.hangout-screen.is-full canvas,
+.hangout-screen.is-full .hangout-controls {
+  width: var(--hangout-full-width);
+}
+.hangout-screen.is-full .hangout-controls {
+  min-height: var(--hangout-controls-height);
 }
 
 /* The nav's "Other" menu hangs just below its button, right-aligned so it never runs off a phone screen. */
