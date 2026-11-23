@@ -2,7 +2,7 @@ import { copyFile, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
-import { ROUTES } from './src/routing/routes'
+import { ROUTES } from './src/routing/routes.ts'
 
 const OUT_DIR = 'dist'
 
