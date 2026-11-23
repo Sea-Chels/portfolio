@@ -18,7 +18,7 @@
 	},
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc -b && vite build",
+		"build": "tsc -b && tsc -p tsconfig.node.json && vite build",
 		"preview": "vite preview",
 		"test": "vitest run",
 		"predeploy": "npm run build",
@@ -27,6 +27,7 @@
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4.3.5",
 		"@types/matter-js": "^0.20.2",
+		"@types/node": "^24.19.2",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.3.0",
 		"@types/three": "^0.187.0",
@@ -35,7 +36,7 @@
 		"gh-pages": "^6.0.0",
 		"postcss": "^8.5.33",
 		"tailwindcss": "^4.3.5",
-		"typescript": "~5.7.2",
+		"typescript": "^7.0.2",
 		"vite": "^6.4.6",
 		"vitest": "^4.1.12"
 	}

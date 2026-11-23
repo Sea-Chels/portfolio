@@ -1,6 +1,9 @@
 /** OWASP's 2023 recommendation for PBKDF2-HMAC-SHA256: every password guess costs this many rounds. */
 export const PBKDF2_ITERATIONS = 600_000
 
+/** Web Crypto rejects views over shared memory, so every byte array here is backed by a plain ArrayBuffer. */
+export type Bytes = Uint8Array<ArrayBuffer>
+
 const RSA: RsaHashedKeyGenParams = { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }
 const AES = 'AES-GCM'
 /** 96-bit IVs are what GCM is designed for; never reuse one under the same key. */
@@ -9,9 +12,9 @@ const SALT_BYTES = 16
 const TAG_BYTES = 16
 
 export interface Envelope {
-  iv: Uint8Array
-  ciphertext: Uint8Array
-  authTag: Uint8Array
+  iv: Bytes
+  ciphertext: Bytes
+  authTag: Bytes
 }
 
 export function hasWebCrypto(): boolean {
@@ -23,13 +26,13 @@ export function generateUserKeys(): Promise<CryptoKeyPair> {
   return crypto.subtle.generateKey(RSA, true, ['wrapKey', 'unwrapKey'])
 }
 
-async function passwordKey(password: string, salt: Uint8Array, iterations: number, usage: KeyUsage): Promise<CryptoKey> {
+async function passwordKey(password: string, salt: Bytes, iterations: number, usage: KeyUsage): Promise<CryptoKey> {
   const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey'])
   return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, material, { name: AES, length: 256 }, false, [usage])
 }
 
 /** Returns salt ‖ iv ‖ ciphertext, the only form of the private key the server ever stores. */
-export async function wrapPrivateKey(privateKey: CryptoKey, password: string, iterations = PBKDF2_ITERATIONS): Promise<Uint8Array> {
+export async function wrapPrivateKey(privateKey: CryptoKey, password: string, iterations = PBKDF2_ITERATIONS): Promise<Bytes> {
   const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES))
   const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES))
   const key = await passwordKey(password, salt, iterations, 'wrapKey')
@@ -42,7 +45,7 @@ export async function wrapPrivateKey(privateKey: CryptoKey, password: string, it
 }
 
 /** Throws on a wrong password: GCM's tag check fails before any key material comes out. */
-export async function unwrapPrivateKey(blob: Uint8Array, password: string, iterations = PBKDF2_ITERATIONS): Promise<CryptoKey> {
+export async function unwrapPrivateKey(blob: Bytes, password: string, iterations = PBKDF2_ITERATIONS): Promise<CryptoKey> {
   const salt = blob.slice(0, SALT_BYTES)
   const iv = blob.slice(SALT_BYTES, SALT_BYTES + IV_BYTES)
   const key = await passwordKey(password, salt, iterations, 'unwrapKey')
@@ -56,11 +59,11 @@ export function generateSessionKey(): Promise<CryptoKey> {
 }
 
 /** One copy per participant, each readable only with that participant's private key. */
-export async function wrapSessionKey(sessionKey: CryptoKey, publicKey: CryptoKey): Promise<Uint8Array> {
+export async function wrapSessionKey(sessionKey: CryptoKey, publicKey: CryptoKey): Promise<Bytes> {
   return new Uint8Array(await crypto.subtle.wrapKey('raw', sessionKey, publicKey, { name: 'RSA-OAEP' }))
 }
 
-export function unwrapSessionKey(blob: Uint8Array, privateKey: CryptoKey): Promise<CryptoKey> {
+export function unwrapSessionKey(blob: Bytes, privateKey: CryptoKey): Promise<CryptoKey> {
   return crypto.subtle.unwrapKey('raw', blob, privateKey, { name: 'RSA-OAEP' }, { name: AES }, false, ['encrypt', 'decrypt'])
 }
 

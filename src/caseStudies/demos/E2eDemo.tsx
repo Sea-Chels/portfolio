@@ -15,6 +15,7 @@ import {
   unwrapSessionKey,
   wrapPrivateKey,
   wrapSessionKey,
+  type Bytes,
   type Envelope,
 } from '../logic/e2e'
 import { StatusLine, type StatusLevel } from './StatusLine'
@@ -25,8 +26,8 @@ const ROUNDS = PBKDF2_ITERATIONS.toLocaleString('en-US')
 
 /** What the database holds. Nothing here can be read without a user's password. */
 interface Stored {
-  users: { name: string; print: string; encryptedPrivateKey: Uint8Array }[]
-  sessionKeys: { name: string; encryptedSessionKey: Uint8Array }[]
+  users: { name: string; print: string; encryptedPrivateKey: Bytes }[]
+  sessionKeys: { name: string; encryptedSessionKey: Bytes }[]
 }
 
 interface Setup {
