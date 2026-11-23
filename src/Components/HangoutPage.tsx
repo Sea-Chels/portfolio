@@ -27,7 +27,7 @@ function HangoutPage() {
   const initialReducedMotion = useRef(reducedMotion)
   const [presence, setPresence] = useState<Presence>({ status: 'connecting', others: 0 })
   const [yours, setYours] = useState<string | null>(null)
-  const initialName = useRef(storedHangoutName() ?? '')
+  const [initialName] = useState(() => storedHangoutName() ?? '')
   const screen = useRef<HTMLDivElement>(null)
   const { full, enter, exit } = useFullscreen(screen)
   const wasFull = useRef(full)
@@ -40,7 +40,7 @@ function HangoutPage() {
       room: ROOM_URL,
       onPresence: setPresence,
       onYours: setYours,
-      name: initialName.current,
+      name: initialName,
     })
     park.current = handle
     return () => {
@@ -84,7 +84,7 @@ function HangoutPage() {
         <div ref={screen} className={`hangout-screen${full ? ' is-full' : ''}`}>
           <div className="hangout-canvas">
             <canvas ref={canvas} aria-describedby="hangout-help" className="block rounded-xl border border-[var(--border)]" />
-            <HangoutName initial={initialName.current} onSave={saveName} />
+            <HangoutName initial={initialName} onSave={saveName} />
           </div>
           <div className="hangout-controls">
             <p className="font-mono text-sm text-accent">{presenceText(presence)}</p>

@@ -19,6 +19,22 @@ function readStoredCooldown(): number | null {
   }
 }
 
+/** Remembers the send so the cooldown survives a reload. */
+function storeSentAt(timestamp: number) {
+  try {
+    window.localStorage.setItem(RATE_LIMIT_STORAGE_KEY, timestamp.toString())
+  } catch {
+    // localStorage may be unavailable (private mode, quota); the in-memory
+    // cooldown still applies for the rest of the session.
+  }
+}
+
+function sendFailure(error: unknown): string {
+  return error instanceof DOMException && error.name === 'TimeoutError'
+    ? 'The message service didn’t answer. Please try again in a moment.'
+    : 'Failed to send message. Please try again.'
+}
+
 function formatCooldownDate(timestamp: number): string {
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: 'long',
@@ -63,6 +79,7 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
     setStatus('loading')
     setErrorMessage('')
 
+    let data: { success?: boolean; message?: string } | null
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
@@ -76,31 +93,27 @@ function ContactForm({ onSuccess, showCancelButton = false, onCancel }: ContactF
         signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
       })
 
-      const data = await response.json()
-
-      if (data.success) {
-        setStatus('success')
-        setFormData(EMPTY_FIELDS)
-        setEmailTouched(false)
-        const now = Date.now()
-        try {
-          window.localStorage.setItem(RATE_LIMIT_STORAGE_KEY, now.toString())
-        } catch {
-          // localStorage may be unavailable (private mode, quota); the in-memory
-          // cooldown still applies for the rest of the session.
-        }
-        setCooldownUntil(now + COOLDOWN_MS)
-        announce('Message sent. Thank you for reaching out.')
-        onSuccess?.()
-      } else {
-        fail(data.message || 'Something went wrong. Please try again.')
-      }
+      data = await response.json()
     } catch (error) {
-      fail(
-        error instanceof DOMException && error.name === 'TimeoutError'
-          ? 'The message service didn’t answer. Please try again in a moment.'
-          : 'Failed to send message. Please try again.',
-      )
+      fail(sendFailure(error))
+      return
+    }
+    if (!data) {
+      fail(sendFailure(data))
+      return
+    }
+
+    if (data.success) {
+      setStatus('success')
+      setFormData(EMPTY_FIELDS)
+      setEmailTouched(false)
+      const now = Date.now()
+      storeSentAt(now)
+      setCooldownUntil(now + COOLDOWN_MS)
+      announce('Message sent. Thank you for reaching out.')
+      onSuccess?.()
+    } else {
+      fail(data.message || 'Something went wrong. Please try again.')
     }
   }
 
