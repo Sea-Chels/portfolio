@@ -1,4 +1,4 @@
-import type { NavigablePage } from '../routing/routes'
+import { HOME, ROUTES, routeForPage, type NavRoute, type NavigablePage } from '../routing/routes'
 import { NETSTAT, SITE_HOST, decrypt, hack, matrix, npmInstall, ping, scan, type Frame } from './hacker'
 
 export type Theme = 'dark' | 'light'
@@ -39,7 +39,7 @@ const HELP_ENTRIES: [string, string][] = [
   ['view --projects', 'jump to the case studies'],
   ['ls', 'list the case studies'],
   ['open <name>', 'open a case study'],
-  ['cd hangout', 'visit the park'],
+  ['cd <page>', `go to a page: ${ROUTES.filter((r) => r !== HOME).map((r) => r.path.slice(1)).join(' · ')}`],
   ['whoami', 'who runs this terminal'],
   ['cat skills', 'print the toolkit'],
   ['theme [light|dark]', 'switch themes'],
@@ -63,6 +63,21 @@ export function fakeCiphertext(seed: string, length = 44): string {
   return `${out}==`
 }
 
+/** Hidden extra names for pages, on top of their paths and nav labels. */
+const CD_ALIASES: Record<string, NavigablePage> = { park: 'hangout' }
+
+/**
+ * The page `cd` lands on, by path or nav label, in any case and with shell spellings like `~/art`,
+ * `/art/` or `./art`. Bare `cd`, `~`, `/`, `.` and `..` are home, where the terminal lives.
+ */
+export function cdTarget(raw: string): NavRoute | null {
+  const name = raw.trim().replace(/^~/, '').replace(/^\.\//, '').replace(/^\/+|\/+$/g, '').toLowerCase()
+  if (name === '' || name === '.' || name === '..') return HOME
+  const alias = CD_ALIASES[name]
+  if (alias) return routeForPage(alias)
+  return ROUTES.find((route) => route.path === `/${name}` || route.label.toLowerCase() === name) ?? null
+}
+
 export function findStudy(studies: StudyRef[], query: string): StudyRef | undefined {
   const q = query.toLowerCase()
   return (
@@ -80,7 +95,15 @@ type Handler = (args: string, ctx: Context) => Output
 const COMMANDS: [RegExp, Handler][] = [
   [/^help$/, () => ({ lines: HELP })],
   [/^(?:view --projects|cd projects)$/, () => ({ lines: ['scrolling to the case studies…'], effect: { kind: 'scroll' } })],
-  [/^cd (?:hangout|park)$/, () => ({ lines: ['heading to the park…'], effect: { kind: 'go', page: 'hangout' } })],
+  [
+    /^cd(?:\s+(.+))?$/,
+    (name) => {
+      const route = cdTarget(name)
+      if (!route) return { lines: [`cd: no such file or directory: ${name}`] }
+      // Like a real cd, success prints nothing; the page announces itself on arrival.
+      return route === HOME ? { lines: [] } : { lines: [], effect: { kind: 'go', page: route.page } }
+    },
+  ],
   [/^touch grass$/, () => ({ lines: ['good call. heading outside…'], effect: { kind: 'go', page: 'hangout' } })],
   [/^ls$/, (_, ctx) => ({ lines: ctx.studies.map((s) => `${s.id.padEnd(18)}${s.title}`) })],
   [

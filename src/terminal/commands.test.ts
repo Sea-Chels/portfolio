@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { HOME, ROUTES } from '../routing/routes'
 import { DEFAULT_COMMAND, fakeCiphertext, findStudy, runCommand, type Context } from './commands'
 
 const ctx: Context = {
@@ -13,11 +14,36 @@ const ctx: Context = {
 const run = (cmd: string) => runCommand(cmd, ctx)
 
 describe('terminal commands', () => {
-  it('heads to the hangout from cd or a hidden touch grass', () => {
-    for (const cmd of ['cd hangout', 'cd park', 'touch grass', 'Touch  Grass']) expect(run(cmd).effect).toEqual({ kind: 'go', page: 'hangout' })
-    expect(run('help').lines.join('\n')).toContain('cd hangout')
-    expect(run('help').lines.join('\n')).not.toContain('touch grass')
-    expect(run('cd nowhere').effect).toBeUndefined()
+  it('cds into every page by path or nav label, in shell spellings', () => {
+    for (const route of ROUTES.filter((r) => r !== HOME)) {
+      const name = route.path.slice(1)
+      for (const cmd of [`cd ${name}`, `cd /${name}`, `cd ~/${name}/`, `cd ./${name}`, `CD ${name.toUpperCase()}`, `cd ${route.label}`]) {
+        expect(run(cmd)).toEqual({ lines: [], effect: { kind: 'go', page: route.page } })
+      }
+    }
+    expect(run('cd park').effect).toEqual({ kind: 'go', page: 'hangout' })
+  })
+
+  it('stays put for home, where the terminal already is', () => {
+    for (const cmd of ['cd', 'cd ~', 'cd /', 'cd .', 'cd ..', 'cd work']) expect(run(cmd)).toEqual({ lines: [] })
+  })
+
+  it('keeps cd projects scrolling to the case studies', () => {
+    expect(run('cd projects').effect).toEqual({ kind: 'scroll' })
+  })
+
+  it('reports pages that don’t exist, as typed', () => {
+    expect(run('cd Nowhere')).toEqual({ lines: ['cd: no such file or directory: Nowhere'] })
+    expect(run('cd about/team')).toEqual({ lines: ['cd: no such file or directory: about/team'] })
+    expect(run('cd ~/secret')).toEqual({ lines: ['cd: no such file or directory: ~/secret'] })
+  })
+
+  it('heads to the park from a hidden touch grass', () => {
+    for (const cmd of ['touch grass', 'Touch  Grass']) expect(run(cmd).effect).toEqual({ kind: 'go', page: 'hangout' })
+    const help = run('help').lines.join('\n')
+    expect(help).toContain('cd <page>')
+    expect(help).toContain('about · art · hangout')
+    expect(help).not.toContain('touch grass')
   })
 
   it('keeps Execute’s original job as the default command', () => {

@@ -42,7 +42,7 @@ export function routeForPath(pathname: string): Route | null {
   return ROUTES.find((route) => route.path === path) ?? null
 }
 
-export function routeForPage(page: NavigablePage): Route<NavigablePage> {
+export function routeForPage(page: NavigablePage): NavRoute {
   const route = ROUTES.find((r) => r.page === page)
   if (!route) throw new Error(`No route for page "${page}"`)
   return route
