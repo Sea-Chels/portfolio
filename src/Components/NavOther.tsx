@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, useState, type FocusEvent, type MouseEvent } from 'react'
+import type { MouseEvent } from 'react'
+import { useDisclosure } from '../a11y/useDisclosure'
 import type { NavRoute, Page } from '../routing/routes'
 import { navLinkClasses } from './navLink'
 
@@ -13,33 +14,8 @@ interface NavOtherProps {
  * returns focus to the button; a click elsewhere or tabbing past the last link closes it too.
  */
 function NavOther({ routes, currentPage, follow }: NavOtherProps) {
-  const [open, setOpen] = useState(false)
-  const root = useRef<HTMLDivElement>(null)
-  const button = useRef<HTMLButtonElement>(null)
-  const panelId = useId()
+  const { open, toggle, close, root, button, panelId, onBlur } = useDisclosure()
   const holdsCurrent = routes.some((route) => route.page === currentPage)
-
-  useEffect(() => {
-    if (!open) return
-    const onPointerDown = (e: PointerEvent) => {
-      if (!(e.target instanceof Node) || !root.current?.contains(e.target)) setOpen(false)
-    }
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return
-      setOpen(false)
-      button.current?.focus()
-    }
-    document.addEventListener('pointerdown', onPointerDown)
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [open])
-
-  const onBlur = (e: FocusEvent<HTMLDivElement>) => {
-    if (!(e.relatedTarget instanceof Node) || !e.currentTarget.contains(e.relatedTarget)) setOpen(false)
-  }
 
   return (
     <div ref={root} className="relative" onBlur={onBlur}>
@@ -48,7 +24,7 @@ function NavOther({ routes, currentPage, follow }: NavOtherProps) {
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => setOpen((was) => !was)}
+        onClick={toggle}
         className={`${navLinkClasses(holdsCurrent)} inline-flex items-center gap-1`}
       >
         OTHER
@@ -56,7 +32,7 @@ function NavOther({ routes, currentPage, follow }: NavOtherProps) {
           <path d="M2.5 4.5 6 8l3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-      <ul id={panelId} hidden={!open} className="nav-other-panel">
+      <ul id={panelId} hidden={!open} className="popover-panel nav-other-panel">
         {routes.map((route) => {
           const isActive = route.page === currentPage
           return (
@@ -65,7 +41,7 @@ function NavOther({ routes, currentPage, follow }: NavOtherProps) {
                 href={route.path}
                 aria-current={isActive ? 'page' : undefined}
                 onClick={(e) => {
-                  setOpen(false)
+                  close()
                   follow(route)(e)
                 }}
                 className={`nav-other-link ${isActive ? 'text-accent' : 'text-[var(--text-secondary)] hover:text-accent'}`}

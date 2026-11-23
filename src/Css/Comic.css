@@ -87,7 +87,7 @@ html.comic ::selection {
 .comic nav {
   border-bottom: var(--comic-stroke) solid var(--ink);
 }
-.comic .nav-other-panel {
+.comic .popover-panel {
   border: var(--comic-stroke) solid var(--ink);
   border-radius: 0;
 }
