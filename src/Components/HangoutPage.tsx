@@ -20,7 +20,7 @@ function HangoutPage() {
   const reducedMotion = useReducedMotion()
   const initialReducedMotion = useRef(reducedMotion)
   const [presence, setPresence] = useState<Presence>({ status: 'connecting', others: 0 })
-  const [held, setHeld] = useState<string | null>(null)
+  const [yours, setYours] = useState<string | null>(null)
 
   useEffect(() => {
     const handle = mountHangout(must(canvas.current, 'hangout canvas'), {
@@ -29,7 +29,7 @@ function HangoutPage() {
       announce,
       room: ROOM_URL,
       onPresence: setPresence,
-      onHeld: setHeld,
+      onYours: setYours,
     })
     park.current = handle
     return () => {
@@ -57,9 +57,9 @@ function HangoutPage() {
         <canvas ref={canvas} aria-describedby="hangout-help" className="block rounded-xl border border-[var(--border)]" />
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <p className="font-mono text-sm text-accent">{presenceText(presence)}</p>
-          {held && (
+          {yours && (
             <button type="button" className="btn-ghost btn-sm" onClick={() => park.current?.drop()}>
-              Put down {PARK.itemName(held)}
+              Put down {PARK.itemName(yours)}
             </button>
           )}
         </div>
