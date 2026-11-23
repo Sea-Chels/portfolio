@@ -25,7 +25,7 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
     })
 
   return (
-    <nav className="sticky top-0 z-50">
+    <nav className="sticky top-0 z-[var(--layer-nav)]">
       <GlassSurface
         width="100%"
         height={72}

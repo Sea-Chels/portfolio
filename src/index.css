@@ -17,6 +17,9 @@
 }
 
 :root {
+  /* Stacking layers: the sticky nav, and the hangout's window-filling full screen above it. */
+  --layer-nav: 50;
+  --layer-full-screen: calc(var(--layer-nav) + 1);
   --bg: #0a0a0a;
   --surface: #141414;
   --elevated: #1e1e1e;
@@ -276,7 +279,7 @@ body,
   );
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: var(--layer-full-screen);
   display: flex;
   flex-direction: column;
   align-items: center;
