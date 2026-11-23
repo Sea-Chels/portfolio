@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useAnnounce } from '../../a11y/announce'
 import { useReducedMotion } from '../../a11y/useReducedMotion'
 import { ALL_LAYERS, type Layers } from './toon/material'
@@ -23,8 +23,7 @@ export default function ToonDemo() {
   const frameRef = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<ToonScene | null>(null)
   const reduced = useReducedMotion()
-  const reducedRef = useRef(reduced)
-  reducedRef.current = reduced
+  const isReduced = useEffectEvent(() => reduced)
   const [supported] = useState(webglAvailable)
   const [layers, setLayers] = useState<Layers>(ALL_LAYERS)
   const [lidOpen, setLidOpen] = useState(false)
@@ -34,7 +33,7 @@ export default function ToonDemo() {
   useEffect(() => {
     const frame = frameRef.current
     if (!supported || !frame) return
-    const scene = createToonScene(frame, CANVAS_ATTRS, () => reducedRef.current)
+    const scene = createToonScene(frame, CANVAS_ATTRS, isReduced)
     sceneRef.current = scene
     return () => {
       scene.dispose()

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useEffectEvent, useLayoutEffect, useRef } from 'react'
 import {
   PAGE_CURL_MS,
   curlBounds,
@@ -64,8 +64,7 @@ interface Props {
 /** Draws the outgoing page curling over its corner to reveal the next piece underneath. */
 export default function PageCurl({ page, direction, onDone }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const done = useRef(onDone)
-  done.current = onDone
+  const done = useEffectEvent(onDone)
 
   const { width: w, height: h } = page
   const bounds = curlBounds(w, h, direction)
@@ -74,7 +73,7 @@ export default function PageCurl({ page, direction, onDone }: Props) {
   useLayoutEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
-    if (!canvas || !ctx) return done.current()
+    if (!canvas || !ctx) return done()
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
     canvas.width = Math.round(bounds.width * dpr)
@@ -184,7 +183,7 @@ export default function PageCurl({ page, direction, onDone }: Props) {
       }
 
       if (t < 1) frame = requestAnimationFrame(draw)
-      else done.current()
+      else done()
     }
 
     if (image.complete && image.naturalWidth) draw(performance.now())
@@ -192,7 +191,7 @@ export default function PageCurl({ page, direction, onDone }: Props) {
       image
         .decode()
         .then(() => draw(performance.now()))
-        .catch(() => done.current())
+        .catch(() => done())
 
     return () => {
       cancelled = true
