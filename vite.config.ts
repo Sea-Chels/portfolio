@@ -1,7 +1,8 @@
 import { copyFile, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
-import react from '@vitejs/plugin-react'
+import babel from '@rolldown/plugin-babel'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { ROUTES } from './src/routing/routes.ts'
 
 const OUT_DIR = 'dist'
@@ -30,7 +31,12 @@ function spaPages(): Plugin {
 const DEV_PORT = 5174
 
 export default defineConfig({
-  plugins: [react(), spaPages()],
+  plugins: [
+    react(),
+    // Components and hooks rely on the compiler instead of useCallback/useMemo, so anything it can't compile fails the build.
+    babel({ presets: [reactCompilerPreset({ panicThreshold: 'all_errors' })] }),
+    spaPages(),
+  ],
   base: '/',
   server: { port: DEV_PORT, strictPort: true },
   preview: { port: DEV_PORT, strictPort: true },
