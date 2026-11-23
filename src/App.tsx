@@ -24,7 +24,7 @@ function AppContent() {
       <NavBar currentPage={route.page} navigate={navigate} />
       <main className="px-6 md:px-10 lg:px-12">
         <Suspense fallback={<div className="min-h-screen" />}>
-          {route.page === 'dev' && <LandingPage />}
+          {route.page === 'dev' && <LandingPage navigate={navigate} />}
           {route.page === 'about' && <AboutPage />}
           {route.page === 'art' && <ArtPage />}
           {route.page === 'hangout' && <HangoutPage />}

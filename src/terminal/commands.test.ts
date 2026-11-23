@@ -13,6 +13,13 @@ const ctx: Context = {
 const run = (cmd: string) => runCommand(cmd, ctx)
 
 describe('terminal commands', () => {
+  it('heads to the hangout from cd or a hidden touch grass', () => {
+    for (const cmd of ['cd hangout', 'cd park', 'touch grass', 'Touch  Grass']) expect(run(cmd).effect).toEqual({ kind: 'go', page: 'hangout' })
+    expect(run('help').lines.join('\n')).toContain('cd hangout')
+    expect(run('help').lines.join('\n')).not.toContain('touch grass')
+    expect(run('cd nowhere').effect).toBeUndefined()
+  })
+
   it('keeps Execute’s original job as the default command', () => {
     expect(run(DEFAULT_COMMAND).effect).toEqual({ kind: 'scroll' })
   })

@@ -1,4 +1,5 @@
 import { lazy, useRef, useState } from 'react'
+import type { NavigablePage } from '../routing/routes'
 import Terminal from '../terminal/Terminal'
 import { caseStudies } from '../caseStudies/data'
 import CaseStudyCard from '../caseStudies/CaseStudyCard'
@@ -12,7 +13,7 @@ import { CONTENT_DELAY_MS } from '../terminal/intro'
 const CaseStudyModal = lazy(() => import('../caseStudies/CaseStudyModal'))
 const ContactFormModal = lazy(() => import('./ContactFormModal'))
 
-function LandingPage() {
+function LandingPage({ navigate }: { navigate: (page: NavigablePage) => void }) {
   const showContent = useReveal(CONTENT_DELAY_MS, useReducedMotion())
   const [showContactModal, setShowContactModal] = useState(false)
   const [openStudy, setOpenStudy] = useState<CaseStudy | null>(null)
@@ -33,6 +34,7 @@ function LandingPage() {
           studies={caseStudies.map(({ id, title }) => ({ id, title }))}
           onViewProjects={scrollToProjects}
           onOpenStudy={openStudyById}
+          onNavigate={navigate}
         />
 
         <div

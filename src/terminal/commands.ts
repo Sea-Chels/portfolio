@@ -1,3 +1,4 @@
+import type { NavigablePage } from '../routing/routes'
 import { NETSTAT, SITE_HOST, decrypt, hack, matrix, npmInstall, ping, scan, type Frame } from './hacker'
 
 export type Theme = 'dark' | 'light'
@@ -10,6 +11,7 @@ export interface StudyRef {
 export type Effect =
   | { kind: 'scroll' }
   | { kind: 'open'; id: string }
+  | { kind: 'go'; page: NavigablePage }
   | { kind: 'theme'; theme: Theme }
   | { kind: 'clear' }
   | { kind: 'exit' }
@@ -37,6 +39,7 @@ const HELP_ENTRIES: [string, string][] = [
   ['view --projects', 'jump to the case studies'],
   ['ls', 'list the case studies'],
   ['open <name>', 'open a case study'],
+  ['cd hangout', 'visit the park'],
   ['whoami', 'who runs this terminal'],
   ['cat skills', 'print the toolkit'],
   ['theme [light|dark]', 'switch themes'],
@@ -77,6 +80,8 @@ type Handler = (args: string, ctx: Context) => Output
 const COMMANDS: [RegExp, Handler][] = [
   [/^help$/, () => ({ lines: HELP })],
   [/^(?:view --projects|cd projects)$/, () => ({ lines: ['scrolling to the case studies…'], effect: { kind: 'scroll' } })],
+  [/^cd (?:hangout|park)$/, () => ({ lines: ['heading to the park…'], effect: { kind: 'go', page: 'hangout' } })],
+  [/^touch grass$/, () => ({ lines: ['good call. heading outside…'], effect: { kind: 'go', page: 'hangout' } })],
   [/^ls$/, (_, ctx) => ({ lines: ctx.studies.map((s) => `${s.id.padEnd(18)}${s.title}`) })],
   [
     /^open(?:\s+(.+))?$/,

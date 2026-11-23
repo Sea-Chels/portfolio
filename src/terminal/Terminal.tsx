@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import type { NavigablePage } from '../routing/routes'
 import { useAnnounce } from '../a11y/announce'
 import { useReducedMotion } from '../a11y/useReducedMotion'
 import { skills } from '../content/skills'
@@ -18,6 +19,8 @@ interface Props {
   studies: StudyRef[]
   onViewProjects: () => void
   onOpenStudy: (id: string) => void
+  /** Leaves the terminal's page for another one. */
+  onNavigate: (page: NavigablePage) => void
 }
 
 interface Entry {
@@ -40,7 +43,7 @@ function Caret() {
 }
 
 /** `headingHidden`: while minimized the window header carries the page's only h1. */
-function Session({ studies, onViewProjects, onOpenStudy, reduced, headingHidden }: Props & { reduced: boolean; headingHidden: boolean }) {
+function Session({ studies, onViewProjects, onOpenStudy, onNavigate, reduced, headingHidden }: Props & { reduced: boolean; headingHidden: boolean }) {
   const greeting = useTypingEffect(GREETING, reduced)
   const name = useTypingEffect(NAME_LINE, reduced)
   const title = useTypingEffect(TITLE, reduced)
@@ -129,6 +132,7 @@ function Session({ studies, onViewProjects, onOpenStudy, reduced, headingHidden 
     if (effect?.kind === 'scroll') onViewProjects()
     else if (effect?.kind === 'open') onOpenStudy(effect.id)
     else if (effect?.kind === 'theme') setTheme(effect.theme)
+    else if (effect?.kind === 'go') onNavigate(effect.page)
   }
 
   const onInputKey = (e: KeyboardEvent<HTMLInputElement>) => {
