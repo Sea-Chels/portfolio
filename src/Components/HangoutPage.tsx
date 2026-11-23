@@ -43,7 +43,7 @@ function HangoutPage() {
   }, [reducedMotion])
 
   return (
-    <div className="min-h-screen py-16">
+    <div className="page-width min-h-screen py-16">
       <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-8">
         <SectionMarker num="06" />
         <h1 className="text-5xl md:text-6xl font-bold text-[var(--text-primary)] mb-4">Hangout</h1>

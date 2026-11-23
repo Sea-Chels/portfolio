@@ -34,7 +34,7 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
         style={{ boxShadow: 'none', border: 'none' }}
       >
         <div className="w-full h-full flex items-center px-4 sm:px-6 md:px-10 lg:px-12">
-          <div className="flex-1 flex items-center justify-between">
+          <div className="page-width flex-1 flex items-center justify-between">
           <a
             href={HOME.path}
             onClick={(e) => followInApp(e, () => navigate(HOME.page))}

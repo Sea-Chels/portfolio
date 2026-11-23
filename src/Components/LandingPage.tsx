@@ -50,7 +50,7 @@ function LandingPage() {
       <section
         ref={projectsRef}
         id="web-projects"
-        className="py-24"
+        className="page-width py-24"
       >
         <div className="mb-16">
           <SectionMarker num="01" className="mb-6" />

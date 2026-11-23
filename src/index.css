@@ -6,6 +6,14 @@
   --color-accent-hover: color-mix(in srgb, rgb(var(--accent-rgb)), white 15%);
   --font-sans: 'Inter', 'Helvetica', 'Arial', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  /* Page content stops growing here, about a laptop's width, so big monitors get margins instead of giant cards. */
+  --container-page: 90rem;
+}
+
+/* Page content and the nav row share one width, so the logo and links line up with the content's edges. */
+@utility page-width {
+  max-width: var(--container-page);
+  margin-inline: auto;
 }
 
 :root {

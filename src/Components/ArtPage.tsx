@@ -129,7 +129,7 @@ function ArtPage() {
   }, [selectedIndex, curl, flips])
 
   return (
-    <div className="min-h-screen py-16">
+    <div className="page-width min-h-screen py-16">
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

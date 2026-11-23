@@ -49,7 +49,7 @@ Before that, I worked on healthcare and consumer products: a multi-agent AI heal
 The design background never left. I care as much about how a thing feels to use as whether the tests pass, and I like building systems (design systems, permission models, agent pipelines) that make the next feature easier to build.`
 
   return (
-    <div className="min-h-screen py-16">
+    <div className="page-width min-h-screen py-16">
       <section
         className={`mb-20 transition-all duration-700 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
