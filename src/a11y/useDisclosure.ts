@@ -35,6 +35,7 @@ export function useDisclosure() {
   }, [])
 
   const toggle = useCallback(() => setOpen((was) => !was), [])
+  const close = useCallback(() => setOpen(false), [])
 
   /** Closes the panel and puts focus back on its button. */
   const dismiss = useCallback(() => {
@@ -42,5 +43,5 @@ export function useDisclosure() {
     button.current?.focus()
   }, [])
 
-  return { open, toggle, dismiss, close: () => setOpen(false), root, button, panelId, onBlur }
+  return { open, toggle, dismiss, close, root, button, panelId, onBlur }
 }
