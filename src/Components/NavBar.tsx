@@ -1,7 +1,9 @@
 import { useTheme } from '../context/ThemeContext'
 import type { MouseEvent } from 'react'
 import GlassSurface from './ui/GlassSurface'
-import { HOME, ROUTES, followInApp, type NavigablePage, type Page, type Route } from '../routing/routes'
+import { HOME, followInApp, navGroup, type NavRoute, type NavigablePage, type Page } from '../routing/routes'
+import NavOther from './NavOther'
+import { navLinkClasses } from './navLink'
 
 interface NavBarProps {
   currentPage: Page
@@ -12,7 +14,7 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
   const { theme, toggleTheme } = useTheme()
 
   /** Real links, so they open in new tabs; a plain click switches pages without reloading. */
-  const follow = (route: Route<NavigablePage>) => (e: MouseEvent<HTMLAnchorElement>) =>
+  const follow = (route: NavRoute) => (e: MouseEvent<HTMLAnchorElement>) =>
     followInApp(e, () => {
       // WORK while already on the home page jumps to the case studies.
       if (route.page === 'dev' && currentPage === 'dev') {
@@ -32,6 +34,8 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
         blur={11}
         contentClassName="w-full h-full rounded-[inherit] relative z-10"
         style={{ boxShadow: 'none', border: 'none' }}
+        // The bar's corners are square, so nothing needs clipping, and the Other menu hangs below it.
+        className="overflow-visible!"
       >
         <div className="w-full h-full flex items-center px-4 sm:px-6 md:px-10 lg:px-12">
           <div className="page-width flex-1 flex items-center justify-between">
@@ -47,25 +51,21 @@ function NavBar({ currentPage, navigate }: NavBarProps) {
           </a>
 
           <div className="flex items-center sm:gap-1">
-            {ROUTES.map((route) => {
+            {navGroup('main').map((route) => {
               const isActive = currentPage === route.page
-              const baseClasses =
-                'nav-link px-1 sm:px-4 py-2 font-mono text-xs sm:text-sm sm:tracking-wider transition-all duration-200'
-              const activeClasses = isActive
-                ? 'text-accent border-b-2 border-accent'
-                : 'text-[var(--text-secondary)] hover:text-accent'
               return (
                 <a
                   key={route.page}
                   href={route.path}
                   onClick={follow(route)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`${baseClasses} ${activeClasses}`}
+                  className={navLinkClasses(isActive)}
                 >
                   {route.label}
                 </a>
               )
             })}
+            <NavOther routes={navGroup('other')} currentPage={currentPage} follow={follow} />
 
             <button
               onClick={toggleTheme}

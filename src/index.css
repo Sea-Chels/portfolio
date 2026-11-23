@@ -251,3 +251,20 @@ body,
   width: 100%;
   height: auto;
 }
+
+/* The nav's "Other" menu hangs just below its button, right-aligned so it never runs off a phone screen. */
+.nav-other-panel {
+  position: absolute;
+  top: calc(100% + var(--spacing) * 3);
+  right: 0;
+  z-index: 10;
+  min-width: calc(var(--spacing) * 40);
+  padding-block: calc(var(--spacing) * 1.5);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(var(--scrim-rgb) / 0.35);
+}
+.nav-other-link {
+  @apply block px-4 py-2 font-mono text-xs sm:text-sm sm:tracking-wider transition-colors duration-200;
+}

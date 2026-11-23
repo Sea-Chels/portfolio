@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { HOME, NOT_FOUND, ROUTES, isPlainClick, routeForPage, routeForPath } from './routes'
+import { HOME, NOT_FOUND, ROUTES, isPlainClick, navGroup, routeForPage, routeForPath } from './routes'
 
 describe('routeForPath', () => {
   it('finds each page by its path', () => {
@@ -16,6 +16,16 @@ describe('routeForPath', () => {
   it('finds nothing for unknown paths', () => {
     expect(routeForPath('/nope')).toBeNull()
     expect(routeForPath('/about/extra')).toBeNull()
+  })
+})
+
+describe('navGroup', () => {
+  it('keeps Work and About in the main row and tucks Art and Hangout under Other', () => {
+    expect(navGroup('main').map((r) => r.page)).toEqual(['dev', 'about'])
+    expect(navGroup('other').map((r) => r.page)).toEqual(['art', 'hangout'])
+  })
+  it('puts every page somewhere in the nav', () => {
+    expect([...navGroup('main'), ...navGroup('other')]).toHaveLength(ROUTES.length)
   })
 })
 

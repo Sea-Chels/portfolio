@@ -87,7 +87,12 @@ html.comic ::selection {
 .comic nav {
   border-bottom: var(--comic-stroke) solid var(--ink);
 }
-.comic .nav-link {
+.comic .nav-other-panel {
+  border: var(--comic-stroke) solid var(--ink);
+  border-radius: 0;
+}
+.comic .nav-link,
+.comic .nav-other-link {
   font-family: var(--comic-font);
   font-size: var(--comic-text-sm);
   letter-spacing: var(--comic-track-wide);

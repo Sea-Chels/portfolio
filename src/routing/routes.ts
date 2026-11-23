@@ -10,14 +10,23 @@ export interface Route<P extends Page = Page> {
   title: string
 }
 
+/** Where a page sits in the nav: in the main row, or tucked under "Other". */
+export type NavGroup = 'main' | 'other'
+
+export interface NavRoute extends Route<NavigablePage> {
+  group: NavGroup
+}
+
 export const SITE_TITLE = 'Chelby Sallady'
 
-export const ROUTES: readonly Route<NavigablePage>[] = [
-  { page: 'dev', path: '/', label: 'WORK', title: SITE_TITLE },
-  { page: 'about', path: '/about', label: 'ABOUT', title: `About · ${SITE_TITLE}` },
-  { page: 'art', path: '/art', label: 'ART', title: `Art · ${SITE_TITLE}` },
-  { page: 'hangout', path: '/hangout', label: 'HANGOUT', title: `Hangout · ${SITE_TITLE}` },
+export const ROUTES: readonly NavRoute[] = [
+  { page: 'dev', path: '/', label: 'WORK', title: SITE_TITLE, group: 'main' },
+  { page: 'about', path: '/about', label: 'ABOUT', title: `About · ${SITE_TITLE}`, group: 'main' },
+  { page: 'art', path: '/art', label: 'ART', title: `Art · ${SITE_TITLE}`, group: 'other' },
+  { page: 'hangout', path: '/hangout', label: 'HANGOUT', title: `Hangout · ${SITE_TITLE}`, group: 'other' },
 ]
+
+export const navGroup = (group: NavGroup) => ROUTES.filter((route) => route.group === group)
 
 export const HOME = ROUTES[0]
 
