@@ -125,12 +125,12 @@
 }
 
 /* Case-study pop-ups */
-.comic .ant-modal-content {
+.comic .ant-modal-container {
   border: var(--comic-panel-stroke) solid var(--ink);
   border-radius: 0.5rem !important;
   box-shadow: calc(var(--comic-offset) * 4) calc(var(--comic-offset) * 4) 0 var(--ink) !important;
 }
-.comic .ant-modal-content .cs-panel,
-.comic .ant-modal-content .cs-status {
+.comic .ant-modal-container .cs-panel,
+.comic .ant-modal-container .cs-status {
   border-color: var(--ink);
 }

@@ -144,7 +144,7 @@ export default function CaseStudyModal({ study, onClose }: Props) {
       destroyOnHidden
       className="project-modal"
       styles={{
-        content: { backgroundColor: 'var(--surface)', padding: 0, borderRadius: '12px', overflow: 'hidden' },
+        container: { backgroundColor: 'var(--surface)', padding: 0, borderRadius: '12px', overflow: 'hidden' },
         mask: { backgroundColor: 'var(--backdrop)', backdropFilter: 'blur(var(--backdrop-blur))' },
       }}
     >
