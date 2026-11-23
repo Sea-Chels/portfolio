@@ -1,7 +1,8 @@
-import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { SendOutlined, CheckCircleOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Tooltip } from 'antd'
 import { useAnnounce } from '../a11y/announce'
+import { FIELD_CLASS, FIELD_INVALID, FIELD_OK, Field } from './Field'
 import { COOLDOWN_MS, EMPTY_FIELDS, cooldownEnd, isComplete, isValidEmail, type ContactFields } from './contactRules'
 
 // Get your free access key from https://web3forms.com/
@@ -9,11 +10,6 @@ export const WEB3FORMS_ACCESS_KEY = 'c29a362b-dd97-4d9f-951a-54c64960941e'
 
 const RATE_LIMIT_STORAGE_KEY = 'portfolio-contact-last-sent'
 const SEND_TIMEOUT_MS = 15_000
-
-const FIELD_CLASS =
-  'w-full px-4 py-3 bg-[var(--bg)] border rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-colors'
-const FIELD_OK = 'border-[var(--border)] focus:border-accent'
-const FIELD_INVALID = 'border-[rgb(var(--error-rgb))] focus:border-[rgb(var(--error-rgb))]'
 
 function readStoredCooldown(): number | null {
   try {
@@ -28,17 +24,6 @@ function formatCooldownDate(timestamp: number): string {
     dateStyle: 'long',
     timeStyle: 'short',
   }).format(new Date(timestamp))
-}
-
-function Field({ id, label, children }: { id: string; label: string; children: ReactNode }) {
-  return (
-    <div>
-      <label htmlFor={id} className="block text-sm font-mono text-[var(--text-secondary)] mb-2">
-        {label}
-      </label>
-      {children}
-    </div>
-  )
 }
 
 interface ContactFormProps {
