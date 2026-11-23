@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useRef, useState, type FocusEvent } from 'react'
+import { useEffect, useId, useRef, useState, type FocusEvent } from 'react'
 
 /**
  * A button that shows and hides a panel. Escape closes it and returns focus to the button, claiming
@@ -30,18 +30,18 @@ export function useDisclosure() {
     }
   }, [open])
 
-  const onBlur = useCallback((e: FocusEvent<HTMLElement>) => {
+  const onBlur = (e: FocusEvent<HTMLElement>) => {
     if (!(e.relatedTarget instanceof Node) || !e.currentTarget.contains(e.relatedTarget)) setOpen(false)
-  }, [])
+  }
 
-  const toggle = useCallback(() => setOpen((was) => !was), [])
-  const close = useCallback(() => setOpen(false), [])
+  const toggle = () => setOpen((was) => !was)
+  const close = () => setOpen(false)
 
   /** Closes the panel and puts focus back on its button. */
-  const dismiss = useCallback(() => {
+  const dismiss = () => {
     setOpen(false)
     button.current?.focus()
-  }, [])
+  }
 
   return { open, toggle, dismiss, close, root, button, panelId, onBlur }
 }

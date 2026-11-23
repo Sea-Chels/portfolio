@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type RefObject } from 'react'
+import { useEffect, useState, type RefObject } from 'react'
 import { inertExcept } from '../a11y/inertExcept'
 import { must } from '../utils/must'
 
@@ -41,16 +41,16 @@ export function useFullscreen(target: RefObject<HTMLElement | null>) {
     }
   }, [filled, target])
 
-  const enter = useCallback(() => {
+  const enter = () => {
     const element = must(target.current, 'full screen target')
     if (canGoFullscreen()) element.requestFullscreen().catch(() => setFilled(true))
     else setFilled(true)
-  }, [target])
+  }
 
-  const exit = useCallback(() => {
+  const exit = () => {
     if (document.fullscreenElement) void document.exitFullscreen()
     setFilled(false)
-  }, [])
+  }
 
   return { full: native || filled, enter, exit }
 }

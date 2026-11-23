@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
 import { motion } from 'framer-motion'
 import { mountHangout, type HangoutHandle, type Presence } from '@sea-chels/hangout/engine'
@@ -59,15 +59,12 @@ function HangoutPage() {
     announce(full ? 'Full screen. Press Escape to leave.' : 'Left full screen.')
   }, [full, announce])
 
-  const saveName = useCallback(
-    (name: string) => {
-      const shown = must(park.current, 'hangout park').setName(name)
-      storeHangoutName(shown)
-      announce(shown ? `You're ${shown} in the park now.` : 'You no longer have a name in the park.')
-      return shown
-    },
-    [announce],
-  )
+  const saveName = (name: string) => {
+    const shown = must(park.current, 'hangout park').setName(name)
+    storeHangoutName(shown)
+    announce(shown ? `You're ${shown} in the park now.` : 'You no longer have a name in the park.')
+    return shown
+  }
 
   return (
     <div className="page-width min-h-screen py-16">

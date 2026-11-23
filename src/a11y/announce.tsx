@@ -1,15 +1,15 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
 const AnnounceContext = createContext<((message: string) => void) | null>(null)
 
 /** The one polite live region for the whole site. */
 export function AnnounceProvider({ children }: { children: ReactNode }) {
   const [message, setMessage] = useState('')
-  const announce = useCallback((next: string) => {
+  const announce = (next: string) => {
     // Clearing first makes screen readers repeat an identical message.
     setMessage('')
     requestAnimationFrame(() => setMessage(next))
-  }, [])
+  }
   return (
     <AnnounceContext.Provider value={announce}>
       {children}

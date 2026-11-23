@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAnnounce } from '../a11y/announce'
 import { NOT_FOUND, routeForPage, routeForPath, type NavigablePage, type Route } from './routes'
 
@@ -19,15 +19,12 @@ export function useRoute(): Location & { navigate: (page: NavigablePage) => void
   const current = useRef(location)
   const announce = useAnnounce()
 
-  const arrive = useCallback(
-    (next: Location) => {
-      current.current = next
-      setLocation(next)
-      window.scrollTo(0, 0)
-      announce(next.route === NOT_FOUND ? 'Page not found' : `${next.route.label.toLowerCase()} page`)
-    },
-    [announce],
-  )
+  const arrive = (next: Location) => {
+    current.current = next
+    setLocation(next)
+    window.scrollTo(0, 0)
+    announce(next.route === NOT_FOUND ? 'Page not found' : `${next.route.label.toLowerCase()} page`)
+  }
 
   useEffect(() => {
     // In-page anchors (#skills, #contact) add history entries too; only a change of page re-routes.
@@ -44,14 +41,11 @@ export function useRoute(): Location & { navigate: (page: NavigablePage) => void
     document.title = location.route.title
   }, [location.route])
 
-  const navigate = useCallback(
-    (page: NavigablePage) => {
-      const { path } = routeForPage(page)
-      if (path !== window.location.pathname) window.history.pushState(null, '', path)
-      arrive(locate(path))
-    },
-    [arrive],
-  )
+  const navigate = (page: NavigablePage) => {
+    const { path } = routeForPage(page)
+    if (path !== window.location.pathname) window.history.pushState(null, '', path)
+    arrive(locate(path))
+  }
 
   return { ...location, navigate }
 }
